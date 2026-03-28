@@ -10,7 +10,7 @@
 
 // Represents a node in a linked list of a bucket
 typedef struct ht_bucket_entry {
-    char* key;
+    const char* key;
     size_t key_size; // excluding the NULL-terminator
     void* value;
     struct ht_bucket_entry* next;

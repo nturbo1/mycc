@@ -72,8 +72,6 @@ static TestResult* test_hashtable_get_and_put(const char* title)
     }
 
     HashTable* ht = ht_new();
-    ht_print(ht);
-    fflush(stdout);
 
     for (size_t i = 0; i < test_data_size; i++)
     {

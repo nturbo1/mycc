@@ -38,15 +38,19 @@ static void ht_delete_bucket_entries(HashTable* ht)
     for (size_t i = 0; i < ht->capacity; i++)
     {
         // Free the bucket chain if exists
-        HtBucketEntry* curr_entry = ht->buckets[i].root;
-        HtBucketEntry* prev_entry = NULL;
-        while (curr_entry != NULL)
-        {
-            prev_entry = curr_entry;
-            curr_entry = curr_entry->next;
-            free(prev_entry->key);
-            free(prev_entry->value);
-            free(prev_entry);
+        if (ht->buckets[i].entry_count > 0) {
+            assert(ht->buckets[i].root != NULL ||
+                    "HashTable bucket root is NULL while the bucket entry_count >0");
+            HtBucketEntry* curr_entry = ht->buckets[i].root;
+            HtBucketEntry* prev_entry = NULL;
+            while (curr_entry != NULL)
+            {
+                prev_entry = curr_entry;
+                curr_entry = curr_entry->next;
+                free((char*) prev_entry->key);
+                free(prev_entry->value);
+                free(prev_entry);
+            }
         }
     }
 }
@@ -57,7 +61,8 @@ static const char* ht_put_ht_bucket_entry(
         HtBucket* buckets,
         const char* key,
         const size_t key_size,
-        void* value
+        void* value,
+        bool is_expansion
 ) {
     size_t bucket_index = get_ht_bucket_index(key, key_size, ht_capacity);
     assert(bucket_index < ht_capacity || "Bucket index >= ht_capacity");
@@ -84,9 +89,14 @@ static const char* ht_put_ht_bucket_entry(
     curr_entry = (HtBucketEntry*) malloc(sizeof(HtBucketEntry));
 
     // Setting the key
-    curr_entry->key = (char*) malloc((key_size + 1) * sizeof(char));
-    strncpy(curr_entry->key, key, key_size);
-    curr_entry->key[key_size] = 0;
+    if (!is_expansion) {
+        curr_entry->key = (char*) malloc((key_size + 1) * sizeof(char));
+        strncpy((char*) curr_entry->key, key, key_size);
+        ((char*) curr_entry->key)[key_size] = 0;
+    } else {
+        // No need to copy the existing valid keys inside the hashtable during an expansion
+        curr_entry->key = key;
+    }
     curr_entry->key_size = key_size;
 
     // Setting the value
@@ -105,41 +115,55 @@ static const char* ht_put_ht_bucket_entry(
 }
 
 // Doubles the capacity of the hashtable and inserts all of its elements to a new expanded location.
-// static bool ht_expand(HashTable* ht)
-// {
-//     size_t new_capacity = ht->capacity * 2;
-//     if (new_capacity < ht->capacity) // overflow (capacity would be too big)
-//         return false;
-//
-//     HtBucket* expanded_buckets = (HtBucket*) malloc(ht->capacity * sizeof(HtBucket));
-//
-//     size_t new_size = 0;
-//     for (size_t i = 0; i < ht->size; i++)
-//     {
-//         HtBucketEntry* entry = ht->buckets[i].root;
-//         while (entry != NULL)
-//         {
-//             ht_put_ht_bucket_entry(
-//                     &new_size,
-//                     new_capacity,
-//                     expanded_buckets,
-//                     entry->key,
-//                     entry->key_size,
-//                     entry->value);
-//
-//             entry = entry->next;
-//         }
-//     }
-//
-//     ht_delete_bucket_entries(ht);
-//     free(ht->buckets);
-//
-//     ht->size = new_size;
-//     ht->capacity = new_capacity;
-//     ht->buckets = expanded_buckets;
-//
-//     return true;
-// }
+static bool ht_expand(HashTable* ht)
+{
+    assert(ht != NULL || "NULL hashtable was given to ht_expand"); // Maybe you should just ht_new()???
+
+    size_t new_capacity = ht->capacity * 2;
+    if (new_capacity < ht->capacity) // overflow (capacity would be too big)
+        return false; // TODO: MAYBE YOU SHOULD LOG ABOUT IT???
+
+    HtBucket* expanded_buckets = (HtBucket*) calloc(new_capacity, sizeof(HtBucket));
+
+    size_t new_size = 0;
+    for (size_t i = 0; i < ht->capacity; i++)
+    {
+        if (ht->buckets[i].entry_count > 0) {
+            assert(ht->buckets[i].root != NULL || "HashTable bucket root is NULL while entry_count >0");
+
+            HtBucketEntry* curr_entry = ht->buckets[i].root;
+            HtBucketEntry* prev_entry = NULL;
+
+            while (curr_entry != NULL)
+            {
+                ht_put_ht_bucket_entry(
+                        &new_size,
+                        new_capacity,
+                        expanded_buckets,
+                        curr_entry->key,
+                        curr_entry->key_size,
+                        curr_entry->value,
+                        true);
+
+                prev_entry = curr_entry;
+                curr_entry = curr_entry->next;
+
+                // The pointers to the key and value are copied in the new entry of the expanded buckets
+                // above, so no need to free the valid memory of the key and value that have been existed
+                // in the hashtable, only freeing the old entry
+                free(prev_entry);
+            }
+        }
+    }
+
+    free(ht->buckets);
+
+    ht->size = new_size;
+    ht->capacity = new_capacity;
+    ht->buckets = expanded_buckets;
+
+    return true;
+}
 
 #define HT_INITIAL_CAPACITY 16
 HashTable* ht_new()
@@ -203,11 +227,11 @@ const char* ht_put(HashTable* ht, const char* key, const size_t key_size, void* 
     assert(key_size > 0 || "An empty key was passed to ht_put");
     assert(value != NULL || "NULL value was passed to ht_put");
 
-    // if (LOAD_FACTOR_VALUE <= ((double) ht->size) / ht->capacity) {
-    //     ht_expand(ht); // TODO: CHECK THE FUNCTION RETURN VALUE AND HANDLE IT, MAYBE LOG THE SITUATION???
-    // }
+    if (LOAD_FACTOR_VALUE <= ((double) ht->size) / ht->capacity) {
+        ht_expand(ht); // TODO: CHECK THE FUNCTION RETURN VALUE AND HANDLE IT, MAYBE LOG THE SITUATION???
+    }
 
-    return ht_put_ht_bucket_entry(&(ht->size), ht->capacity, ht->buckets, key, key_size, value);
+    return ht_put_ht_bucket_entry(&(ht->size), ht->capacity, ht->buckets, key, key_size, value, false);
 }
 
 // For debugging purposes only
