@@ -34,11 +34,13 @@ debug: $(TARGET)
 release: CFLAGS += $(RELEASE_FLAGS)
 release: $(TARGET)
 
+test: CFLAGS += $(DEBUG_FLAGS)
 test: $(OBJ_WITHOUT_MAIN)
 	@$(MAKE) -C test SRC_OBJ="$(OBJ_FOR_TEST)"
 
 clean:
 	rm -rf $(BUILDDIR)
+	$(MAKE) -C test clean
 
 .PHONY: all debug release clean build test
 

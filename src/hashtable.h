@@ -37,4 +37,6 @@ void ht_delete(HashTable* ht);
 void* ht_get(const HashTable* ht, const char* key, const size_t key_size);
 const char* ht_put(HashTable* ht, const char* key, const size_t key_size, void* value);
 
+void ht_print(const HashTable* ht);
+
 #endif

@@ -60,12 +60,11 @@ static const char* ht_put_ht_bucket_entry(
         void* value
 ) {
     size_t bucket_index = get_ht_bucket_index(key, key_size, ht_capacity);
+    assert(bucket_index < ht_capacity || "Bucket index >= ht_capacity");
     HtBucket* bucket = buckets + bucket_index;
-
-    if (*ht_size <= bucket_index) { // bucket is out of bounds
-        bucket->root = NULL;
-        bucket->entry_count = 0;
-    }
+    assert((bucket->entry_count > 0 && bucket->root != NULL) ||
+            (bucket->entry_count == 0 && bucket->root == NULL) ||
+            "HashTable bucket entry_count and root are not in sync");
 
     HtBucketEntry* curr_entry = bucket->root;
     HtBucketEntry* prev_entry = NULL;
@@ -106,41 +105,41 @@ static const char* ht_put_ht_bucket_entry(
 }
 
 // Doubles the capacity of the hashtable and inserts all of its elements to a new expanded location.
-static bool ht_expand(HashTable* ht)
-{
-    size_t new_capacity = ht->capacity * 2;
-    if (new_capacity < ht->capacity) // overflow (capacity would be too big)
-        return false;
-
-    HtBucket* expanded_buckets = (HtBucket*) malloc(ht->capacity * sizeof(HtBucket));
-
-    size_t new_size = 0;
-    for (size_t i = 0; i < ht->size; i++)
-    {
-        HtBucketEntry* entry = ht->buckets[i].root;
-        while (entry != NULL)
-        {
-            ht_put_ht_bucket_entry(
-                    &new_size,
-                    new_capacity,
-                    expanded_buckets,
-                    entry->key,
-                    entry->key_size,
-                    entry->value);
-
-            entry = entry->next;
-        }
-    }
-
-    ht_delete_bucket_entries(ht);
-    free(ht->buckets);
-
-    ht->size = new_size;
-    ht->capacity = new_capacity;
-    ht->buckets = expanded_buckets;
-
-    return true;
-}
+// static bool ht_expand(HashTable* ht)
+// {
+//     size_t new_capacity = ht->capacity * 2;
+//     if (new_capacity < ht->capacity) // overflow (capacity would be too big)
+//         return false;
+//
+//     HtBucket* expanded_buckets = (HtBucket*) malloc(ht->capacity * sizeof(HtBucket));
+//
+//     size_t new_size = 0;
+//     for (size_t i = 0; i < ht->size; i++)
+//     {
+//         HtBucketEntry* entry = ht->buckets[i].root;
+//         while (entry != NULL)
+//         {
+//             ht_put_ht_bucket_entry(
+//                     &new_size,
+//                     new_capacity,
+//                     expanded_buckets,
+//                     entry->key,
+//                     entry->key_size,
+//                     entry->value);
+//
+//             entry = entry->next;
+//         }
+//     }
+//
+//     ht_delete_bucket_entries(ht);
+//     free(ht->buckets);
+//
+//     ht->size = new_size;
+//     ht->capacity = new_capacity;
+//     ht->buckets = expanded_buckets;
+//
+//     return true;
+// }
 
 #define HT_INITIAL_CAPACITY 16
 HashTable* ht_new()
@@ -177,7 +176,9 @@ void* ht_get(const HashTable* ht, const char* key, const size_t key_size)
     assert(key != NULL || "NULL key was passed to ht_get");
     assert(key_size > 0 || "An empty key was passed to ht_get");
 
-    HtBucket* bucket = ht->buckets + get_ht_bucket_index(key, key_size, ht->capacity);
+    const size_t bucket_index = get_ht_bucket_index(key, key_size, ht->capacity);
+    assert(bucket_index < ht->capacity || "HashTable bucket_index >= ht->capacity");
+    HtBucket* bucket = ht->buckets + bucket_index;
 
     if (bucket == NULL)
         return NULL;
@@ -202,9 +203,9 @@ const char* ht_put(HashTable* ht, const char* key, const size_t key_size, void* 
     assert(key_size > 0 || "An empty key was passed to ht_put");
     assert(value != NULL || "NULL value was passed to ht_put");
 
-    if (LOAD_FACTOR_VALUE <= ht->size / ht->capacity) {
-        ht_expand(ht);
-    }
+    // if (LOAD_FACTOR_VALUE <= ((double) ht->size) / ht->capacity) {
+    //     ht_expand(ht); // TODO: CHECK THE FUNCTION RETURN VALUE AND HANDLE IT, MAYBE LOG THE SITUATION???
+    // }
 
     return ht_put_ht_bucket_entry(&(ht->size), ht->capacity, ht->buckets, key, key_size, value);
 }
@@ -215,14 +216,51 @@ void ht_print(const HashTable* ht)
 {
     if (ht == NULL) {
         printf("NULL\n");
-    } else {
-        printf("{size: %zu, capacity: %zu, buckets: &%p[", ht->size, ht->capacity, (void*) ht->buckets);
-        for (size_t i = 0; i < ht->capacity - 1; i++)
-        {
-            printf("{root: %p, entry_count: %zu}, ",
-                    (void*) ht->buckets[i].root, ht->buckets[i].entry_count);
+
+        return;
+    }
+
+    printf("{ size: %zu, capacity: %zu, buckets: &%p [\n",
+            ht->size, ht->capacity, (void*) ht->buckets);
+
+    for (size_t i = 0; i < ht->capacity - 1; i++)
+    {
+        printf("\t%zu {root: %p, entry_count: %zu}: ",
+                i, (void*) ht->buckets[i].root, ht->buckets[i].entry_count);
+
+        if (ht->buckets[i].entry_count > 0) {
+            HtBucketEntry* curr = ht->buckets[i].root;
+            while (curr != NULL)
+            {
+                printf("{key: %s, key_size: %zu, value: %p, next: %p} -> ",
+                        curr->key, curr->key_size, (void*) curr->value, (void*) curr->next);
+                curr = curr->next;
+            }
+
+            printf("NULL\n");
+        } else {
+            printf("EMPTY\n");
         }
-        printf("{root: %p, entry_count: %zu}]\n",
-                (void*) ht->buckets[ht->capacity - 1].root, ht->buckets[ht->capacity - 1].entry_count);
+    }
+
+    printf("\t%zu {root: %p, entry_count: %zu}: ",
+            ht->capacity - 1,
+            (void*) ht->buckets[ht->capacity - 1].root,
+            ht->buckets[ht->capacity - 1].entry_count);
+
+    if (ht->buckets[ht->capacity - 1].entry_count > 0) {
+        assert(ht->buckets[ht->capacity - 1].root != NULL ||
+                "HashTable's last bucket root is NULL while its entry_count >0");
+        HtBucketEntry* curr = ht->buckets[ht->capacity - 1].root;
+        while (curr != NULL)
+        {
+            printf("{key: %s, key_size: %zu, value: %p, next: %p} -> ",
+                    curr->key, curr->key_size, (void*) curr->value, (void*) curr->next);
+            curr = curr->next;
+        }
+
+        printf("NULL\n]}\n");
+    } else {
+        printf("EMPTY\n]}\n");
     }
 }
