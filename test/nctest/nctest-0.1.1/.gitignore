@@ -35,6 +35,8 @@
 *.i*86
 *.x86_64
 *.hex
+nctest
+nctest_tests
 
 # Debug files
 *.dSYM/
@@ -54,9 +56,6 @@ dkms.conf
 # debug information files
 *.dwo
 
-# Build files/directories
+# Build directories
 build
 bin
-
-# Distributions
-*.tar.gz

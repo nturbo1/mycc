@@ -1,59 +1,51 @@
-CC 				:= gcc
-CFLAGS 			:= -std=c17 -Wall -Wextra -Werror -Wpedantic -Wshadow
-DEBUG_FLAGS 	:= -O0 -g3 -DDEBUG -fno-omit-frame-pointer
+CC      		:= gcc
+CFLAGS  		:= -std=c99 -Wall -Wextra -Werror -Wpedantic -Wshadow
+# DEBUG_FLAGS 	:= -O0 -g3 -DDEBUG -fno-omit-frame-pointer
 RELEASE_FLAGS 	:= -O3 -DNDEBUG
 
-export CC
-export CFLAGS
-export DEBUG_FLAGS
-export RELEASE_FLAGS
-
 ############################################# SOURCE CONFIGS #############################################
-INCLUDES 	:=
+INCLUDES 	:= -Iinclude
 SRCDIR 		:= src
+TESTDIR		:= test
 BUILDDIR 	:= build
+BINDIR		:= bin
 
-SRC 				:= $(wildcard $(SRCDIR)/*.c)
-OBJ 				:= $(SRC:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
-OBJ_WITHOUT_MAIN 	:= $(filter-out %/main.o, $(OBJ))
-TEST_OBJ 			:= $(OBJ_WITHOUT_MAIN:%.o=../%.o)
+SRC := $(wildcard $(SRCDIR)/*.c)
+TEST_SRC := $(wildcard $(TESTDIR)/*.c)
+OBJ := $(SRC:$(SRCDIR)/%.c=$(BUILDDIR)/%.o) $(TEST_SRC:$(TESTDIR)/%.c=$(BUILDDIR)/%.o)
 
-TARGET_EXEC := mycc
-TARGET		:= $(BUILDDIR)/$(TARGET_EXEC)
+TARGET=$(BINDIR)/nctest
 
 #########################################################################################################
 ################################################ RECIPES ################################################
 #########################################################################################################
 
-all: debug
+all: run-example-user-tests
 
-debug: CFLAGS += $(DEBUG_FLAGS)
-debug: $(TARGET)
-
-release: CFLAGS += $(RELEASE_FLAGS)
-release: $(TARGET)
-
-test: $(OBJ_WITHOUT_MAIN)
-	@$(MAKE) -C test \
-		PROJ_TEST_OBJ="$(TEST_OBJ)" \
-		PROJ_TARGET_EXEC="$(TARGET_EXEC)" \
-		PROJ_INCLUDES="$(INCLUDES) -I../$(SRCDIR)"
+run-example-user-tests: CFLAGS += $(RELEASE_FLAGS)
+run-example-user-tests: $(TARGET)
 
 clean:
-	rm -rf $(BUILDDIR)
-	$(MAKE) -C test clean
+	rm -rf $(BUILDDIR) $(BINDIR)
 
-.PHONY: all debug release clean build test
+.PHONY: all run-example-user-tests clean
 
 #########################################################################################################
 ################################################# RULES #################################################
 #########################################################################################################
 
-$(TARGET): $(OBJ)
+$(TARGET): $(OBJ) | $(BINDIR)
 	$(CC) $(CFLAGS) $^ -o $@
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(BUILDDIR):
-	mkdir -p $(BUILDDIR)
+$(BUILDDIR)/%.o: $(TESTDIR)/%.c | $(BUILDDIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(BUILDDIR) $(BINDIR):
+	mkdir -p $@
+
+# Build the static library (without main)
+# libnctest.a: nctest.o
+# 	ar rcs $@ $^

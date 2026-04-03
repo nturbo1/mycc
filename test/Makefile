@@ -1,46 +1,44 @@
-########################################### TEST SOURCE CONFIGS ##########################################
-SRCDIR := ../src #TODO: There should be a better way to this
-TEST_INCLUDES := -I$(SRCDIR)
-TEST_BUILDDIR := build
-TEST_BUILD_UTILDIR := $(TEST_BUILDDIR)/util
+CFLAGS 				?= -std=c17 -Wall -Wextra -Werror -Wpedantic -Wshadow
+DEBUG_FLAGS 		?= -O0 -g3 -DDEBUG -fno-omit-frame-pointer
+RELEASE_FLAGS 		?= -O3 -DNDEBUG
+PROJ_TARGET_EXEC	?= mycc
 
-TEST_UTIL_SRC := $(wildcard util/*.c)
-TEST_SRC := $(wildcard *_test.c)
-TEST_UTIL_OBJ := $(TEST_UTIL_SRC:%.c=$(TEST_BUILDDIR)/%.o)
-TEST_OBJ := $(TEST_SRC:%.c=$(TEST_BUILDDIR)/%.o)
+# Object files that contain tests (expected to be passed by the caller)
+PROJ_TEST_OBJ ?=
 
-TEST_TARGET=$(TEST_BUILDDIR)/mycc_test
+BUILDDIR 	:= build
+TARGET		:= $(BUILDDIR)/$(PROJ_TARGET_EXEC)-tests
 
-#########################################################################################################
-################################################ RECIPES ################################################
-#########################################################################################################
+# Third-party dependency configs
+NCTEST_ROOTDIR := nctest/nctest-0.1.1
 
-all: test
+PROJ_INCLUDES	?=
+INCLUDES 		+= -I$(NCTEST_ROOTDIR)/include $(PROJ_INCLUDES)
+SRCDIR 			:= $(NCTEST_ROOTDIR)/src
+SRC				:= $(wildcard $(SRCDIR)/*.c)
+TEST_SRC		:= $(wildcard *_test.c)
+TEST_OBJ		:= $(TEST_SRC:%.c=$(BUILDDIR)/%.o)
+OBJ				:= $(SRC:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
 
-test: CFLAGS += $(TEST_INCLUDES)
-test: $(TEST_TARGET)
-	@./$(TEST_TARGET)
+.PHONY: test debug-test clean
+
+test: CFLAGS += $(RELEASE_FLAGS)
+debug-test: CFLAGS += $(DEBUG_FLAGS)
+
+test debug-test: $(TARGET)
+	@$(TARGET) -v # Remove -v if you want only the final test stats to be outputed
 
 clean:
-	rm -rf $(TEST_BUILDDIR)
+	rm -rf $(BUILDDIR)
 
-.PHONY: all test clean
+$(TARGET): $(PROJ_TEST_OBJ) $(OBJ) $(TEST_OBJ)
+	$(CC) $(CFLAGS) -o $@ $^
 
-#########################################################################################################
-################################################# RULES #################################################
-#########################################################################################################
-
-$(TEST_TARGET): $(TEST_OBJ) $(TEST_UTIL_OBJ) $(SRC_OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
-
-$(TEST_BUILDDIR)/%.o: %.c | $(TEST_BUILDDIR) $(TEST_BUILD_UTILDIR)
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# $(TEST_BUILD_UTILDIR)/%.o: %.c | $(TEST_BUILD_UTILDIR)
-# 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+$(BUILDDIR)/%_test.o: %_test.c | $(BUILDDIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(TEST_BUILDDIR):
-	mkdir -p $(TEST_BUILDDIR)
-
-$(TEST_BUILD_UTILDIR):
-	mkdir -p $(TEST_BUILD_UTILDIR)
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)

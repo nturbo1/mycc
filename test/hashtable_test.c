@@ -1,5 +1,5 @@
+#include "nctest.h"
 #include "hashtable.h"
-#include "util/test_util.h"
 
 #include <assert.h>
 #include <string.h>
@@ -13,34 +13,20 @@ typedef struct {
     void* value;
 } TEST_HT_Pair;
 
-static TestResult* test_hashtable_new_and_delete(const char* title)
+TEST(test_hashtable_new_and_delete, "Test hashtable new and delete functions")
 {
-    TestResult* test_result = malloc(sizeof(TestResult));
-    test_result->title = title;
-    test_result->is_passed = true;
-    test_result->output = NULL;
-
     // GIVEN
     HashTable* ht = ht_new(); 
 
     // THEN
-    if (ht->size != 0) {
-        test_result->is_passed = false;
-        test_result->output = test_output("Size of a newly created hashtable must be zero!");
-    }
+    ASSERT_TRUE(ht->size == 0);
 
+    // Clean-up
     ht_delete(ht);
-
-    return test_result;
 }
 
-static TestResult* test_hashtable_get_and_put(const char* title)
+TEST(test_hashtable_get_and_put, "Test hashtable get and put functions")
 {
-    TestResult* test_result = malloc(sizeof(TestResult));
-    test_result->title = title;
-    test_result->output = NULL;
-    test_result->is_passed = true;
-
     // GIVEN
     const size_t test_data_size = 20;
     TEST_HT_Pair test_data[] = {
@@ -85,46 +71,10 @@ static TestResult* test_hashtable_get_and_put(const char* title)
         // THEN
         void* inserted_value = ht_get(ht, key, key_size);
 
-        if (strncmp(inserted_key, key, key_size) != 0) {
-            test_result->is_passed = false;
-            test_result->output = test_output("ht_put returned a wrong key");
-
-            goto end;
-        }
-        if (inserted_value != value) {
-            test_result->is_passed = false;
-            test_result->output = test_output("ht_get returned a wrong value address");
-
-            goto end;
-        }
+        ASSERT_TRUE(strncmp(inserted_key, key, key_size) == 0);
+        ASSERT_TRUE(inserted_value == value);
     }
 
-end:
     // CLEAN-UP
-
     ht_delete(ht);
-
-    return test_result;
-}
-
-TestSuiteResult test_hashtable(const char* title)
-{
-    TestSuiteResult suite_result = {.title = title, .test_count = 0, .tests = NULL, .is_passed = true};
-
-    TestResult* tr1 = test_hashtable_new_and_delete("Test hashtable new and delete");
-    TestResult* tr2 = test_hashtable_get_and_put("Test hashtable get and put");
-
-    const size_t test_count = 2;
-    TestResult* trs = malloc(test_count * sizeof(TestResult));
-    trs[0] = *tr1;
-    trs[1] = *tr2;
-
-    suite_result.tests = trs;
-    suite_result.test_count = test_count;
-
-    // TODO: THERE SHOULD BE A BETTER WAY OF ACHIEVING THIS, MAYBE IMPLEMENT A SET OR A DYNAMIC ARRAY?
-    if (!tr1->is_passed || !tr2->is_passed)
-        suite_result.is_passed = false;
-
-    return suite_result;
 }
