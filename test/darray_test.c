@@ -148,3 +148,41 @@ TEST(test_expand_when_DArray_add, "GIVEN a DArray object with elements at full c
         VERIFY_DATA_AT_INDEX(darr, i, data, data_size);
     }
 }
+
+TEST(test_darray_set_at, "GIVEN a DArray object with at least one element, WHEN set an element at a certain index, THEN the new element data should be placed at the specified index in the array overrding the old element data.")
+{
+    // GIVEN
+    size_t data_size = 8;
+    size_t capacity = 16;
+    DArray* darr = init_darray(NULL, capacity, data_size);
+    ASSERT_TRUE(darr != NULL);
+    ASSERT_TRUE(darr->capacity == capacity);
+
+    unsigned char old_data[data_size];
+    old_data[0] = 18;
+    old_data[1] = 52;
+    old_data[2] = 253;
+    old_data[3] = 254;
+    old_data[4] = 175;
+    old_data[5] = 174;
+    old_data[6] = 239;
+    old_data[7] = 45;
+
+    unsigned char new_data[data_size];
+    new_data[0] = 23;
+    new_data[1] = 54;
+    new_data[2] = 12;
+    new_data[3] = 90;
+    new_data[4] = 232;
+    new_data[5] = 72;
+    new_data[6] = 123;
+    new_data[7] = 199;
+
+    darray_add(darr, old_data, data_size);
+    ASSERT_TRUE(darr->length == 1);
+    VERIFY_DATA_AT_INDEX(darr, 0, old_data, data_size);
+
+    darray_set_at(darr, 0, new_data, data_size);
+    ASSERT_TRUE(darr->length == 1);
+    VERIFY_DATA_AT_INDEX(darr, 0, new_data, data_size); // should contain the new_data bytes now
+}
