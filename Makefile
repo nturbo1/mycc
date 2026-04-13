@@ -9,7 +9,7 @@ export DEBUG_FLAGS
 export RELEASE_FLAGS
 
 ############################################# SOURCE CONFIGS #############################################
-INCLUDES 	:=
+INCLUDES 	:= -Isrc/include
 SRCDIR 		:= src
 BUILDDIR 	:= build
 
@@ -37,7 +37,7 @@ test: $(OBJ_WITHOUT_MAIN)
 	@$(MAKE) -C test \
 		PROJ_TEST_OBJ="$(TEST_OBJ)" \
 		PROJ_TARGET_EXEC="$(TARGET_EXEC)" \
-		PROJ_INCLUDES="$(INCLUDES) -I../$(SRCDIR)"
+		PROJ_INCLUDES="-I../$(SRCDIR)"
 
 clean:
 	rm -rf $(BUILDDIR)
