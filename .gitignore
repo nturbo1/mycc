@@ -60,3 +60,6 @@ bin
 
 # Distributions
 *.tar.gz
+
+# Debug, memory check, etc. output
+vgcore.*
