@@ -16,7 +16,7 @@ typedef struct {
 TEST(test_hashtable_new_and_delete, "Test hashtable new and delete functions")
 {
     // GIVEN
-    HashTable* ht = ht_new(); 
+    HashTable* ht = ht_new(0); 
 
     // THEN
     ASSERT_TRUE(ht->size == 0);
@@ -57,7 +57,7 @@ TEST(test_hashtable_get_and_put, "Test hashtable get and put functions")
         test_data[i].value = malloc(16);
     }
 
-    HashTable* ht = ht_new();
+    HashTable* ht = ht_new(0);
 
     for (size_t i = 0; i < test_data_size; i++)
     {
@@ -69,7 +69,7 @@ TEST(test_hashtable_get_and_put, "Test hashtable get and put functions")
         const char* inserted_key = ht_put(ht, key, key_size, value);
 
         // THEN
-        void* inserted_value = ht_get(ht, key, key_size);
+        const void* inserted_value = ht_get(ht, key, key_size);
 
         ASSERT_TRUE(strncmp(inserted_key, key, key_size) == 0);
         ASSERT_TRUE(inserted_value == value);

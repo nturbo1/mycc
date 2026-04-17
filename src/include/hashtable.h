@@ -12,7 +12,7 @@
 typedef struct ht_bucket_entry {
     const char* key;
     size_t key_size; // excluding the NULL-terminator
-    void* value;
+    const void* value;
     struct ht_bucket_entry* next;
 } HtBucketEntry;
 
@@ -28,14 +28,15 @@ typedef struct {
     HtBucket* buckets;
 } HashTable;
 
-// Creates a new hash table and allocates memory on the heap
-HashTable* ht_new();
+// Creates a new hash table and allocates memory on the heap.
+// Pass 0 capacity if you don't want to specify the inital capacity, default capacity will be used in that case.
+HashTable* ht_new(size_t capacity);
 
 // Deletes the hash table and all the associated heap memory with it.
 void ht_delete(HashTable* ht);
 
-void* ht_get(const HashTable* ht, const char* key, const size_t key_size);
-const char* ht_put(HashTable* ht, const char* key, const size_t key_size, void* value);
+const void* ht_get(const HashTable* ht, const char* key, const size_t key_size);
+const char* ht_put(HashTable* ht, const char* key, const size_t key_size, const void* value);
 
 void ht_print(const HashTable* ht);
 

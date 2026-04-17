@@ -1,5 +1,5 @@
 CC 				:= gcc
-CFLAGS 			:= -std=c17 -Wall -Wextra -Werror -Wpedantic -Wshadow
+CFLAGS 			:= -std=c99 -Wall -Wextra -Werror -Wpedantic -Wshadow
 DEBUG_FLAGS 	:= -O0 -g3 -DDEBUG -fno-omit-frame-pointer
 RELEASE_FLAGS 	:= -O3 -DNDEBUG
 
@@ -14,7 +14,9 @@ SRCDIR 		:= src
 BUILDDIR 	:= build
 
 SRC 				:= $(wildcard $(SRCDIR)/*.c)
-OBJ 				:= $(SRC:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
+UTIL_SRC 			:= $(wildcard $(SRCDIR)/util/*.c)
+UTIL_OBJ 			:= $(UTIL_SRC:$(SRCDIR)/%.c=$(BUILDDIR)/%.o)
+OBJ 				:= $(SRC:$(SRCDIR)/%.c=$(BUILDDIR)/%.o) $(UTIL_OBJ)
 OBJ_WITHOUT_MAIN 	:= $(filter-out %/main.o, $(OBJ))
 TEST_OBJ 			:= $(OBJ_WITHOUT_MAIN:%.o=../%.o)
 
@@ -37,7 +39,7 @@ test: $(OBJ_WITHOUT_MAIN)
 	@$(MAKE) -C test \
 		PROJ_TEST_OBJ="$(TEST_OBJ)" \
 		PROJ_TARGET_EXEC="$(TARGET_EXEC)" \
-		PROJ_INCLUDES="-I../$(SRCDIR)"
+		PROJ_INCLUDES="-I../$(SRCDIR) -I../$(SRCDIR)/include -I../$(SRCDIR)/util"
 
 clean:
 	rm -rf $(BUILDDIR)
@@ -55,5 +57,11 @@ $(TARGET): $(OBJ)
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(BUILDDIR)/util/%.o: $(SRCDIR)/util/%.c | $(BUILDDIR)/util
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 $(BUILDDIR):
 	mkdir -p $(BUILDDIR)
+
+$(BUILDDIR)/util:
+	mkdir -p $(BUILDDIR)/util

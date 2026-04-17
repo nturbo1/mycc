@@ -74,6 +74,7 @@ void* darray_get_at(DArray* darr, const size_t index)
 {
     assert_always(darr != NULL, "NULL object of type DArray was passed");
     assert_always(index < darr->length, "Index is out of bounds");
+
     return (void*) (darr->arr + (darr->data_size * index));
 }
 

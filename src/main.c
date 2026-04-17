@@ -1,3 +1,5 @@
+#include "compiler.h"
+
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
@@ -6,7 +8,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    printf("argv[1] = %s\n", argv[1]);
+    compile(argv[1]);
 
     return 0;
 }

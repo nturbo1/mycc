@@ -5,124 +5,174 @@
 #include <stdbool.h>
 
 typedef enum {
-    TOK_CATG_ILLEGAL,
-	TOK_CATG_EOF,
-	TOK_CATG_COMMENT,
-    TOK_CATG_HASH, // #
+    TOKEN_TYPE_beg,
 
-	TOK_CATG_literal_beg,
+    TOKEN_TYPE_ILLEGAL,
+	TOKEN_TYPE_EOF,
+	TOKEN_TYPE_COMMENT,
+
+    TOKEN_TYPE_PREPROCESSOR_DIRECTIVE,
+
+    TOKEN_TYPE_punctuator_beg,
+
+	TOKEN_TYPE_LPAREN, // (
+	TOKEN_TYPE_LBRACK, // [
+	TOKEN_TYPE_LBRACE, // {
+
+	TOKEN_TYPE_RPAREN,    // )
+	TOKEN_TYPE_RBRACK,    // ]
+	TOKEN_TYPE_RBRACE,    // }
+
+	TOKEN_TYPE_COMMA,  // ,
+	TOKEN_TYPE_PERIOD, // .
+	TOKEN_TYPE_COLON,     // :
+	TOKEN_TYPE_SEMICOLON, // ;
+	TOKEN_TYPE_ELLIPSIS, // ...
+
+    TOKEN_TYPE_punctuator_end,
+
+	TOKEN_TYPE_literal_beg,
 	// Identifiers and basic type literals
 	// (these tokens stand for classes of literals)
-	TOK_CATG_IDENT,  // main
-	TOK_CATG_INT_LIT,    // 12345
-	TOK_CATG_FLOAT_LIT,  // 123.45
-	TOK_CATG_CHAR_LIT,   // 'a'
-	TOK_CATG_STRING_LIT, // "abc"
-	TOK_CATG_literal_end,
+	TOKEN_TYPE_IDENT,  // main
+	TOKEN_TYPE_INT_LIT,    // 12345
+	TOKEN_TYPE_FLOAT_LIT,  // 123.45
+	TOKEN_TYPE_CHAR_LIT,   // 'a'
+	TOKEN_TYPE_STRING_LIT, // "abc"
 
-	TOK_CATG_operator_beg,
+	TOKEN_TYPE_literal_end,
+
+	TOKEN_TYPE_operator_beg,
 	// Operators and delimiters
-	TOK_CATG_ADD, // +
-	TOK_CATG_SUB, // -
-	TOK_CATG_MUL, // *
-	TOK_CATG_QUO, // /
-	TOK_CATG_REM, // %
+	TOKEN_TYPE_ADD, // +
+	TOKEN_TYPE_SUB, // -
+	TOKEN_TYPE_MUL, // *
+	TOKEN_TYPE_QUO, // /
+	TOKEN_TYPE_REM, // %
 
-	TOK_CATG_AND,     // &
-	TOK_CATG_OR,      // |
-	TOK_CATG_XOR,     // ^
-	TOK_CATG_SHL,     // <<
-	TOK_CATG_SHR,     // >>
-	TOK_CATG_AND_NOT, // &^
+	TOKEN_TYPE_AND,     // &
+	TOKEN_TYPE_OR,      // |
+	TOKEN_TYPE_XOR,     // ^
+	TOKEN_TYPE_SHL,     // <<
+	TOKEN_TYPE_SHR,     // >>
+	TOKEN_TYPE_AND_NOT, // &^
 
-	TOK_CATG_ADD_ASSIGN, // +=
-	TOK_CATG_SUB_ASSIGN, // -=
-	TOK_CATG_MUL_ASSIGN, // *=
-	TOK_CATG_QUO_ASSIGN, // /=
-	TOK_CATG_REM_ASSIGN, // %=
+	TOKEN_TYPE_ADD_ASSIGN, // +=
+	TOKEN_TYPE_SUB_ASSIGN, // -=
+	TOKEN_TYPE_MUL_ASSIGN, // *=
+	TOKEN_TYPE_QUO_ASSIGN, // /=
+	TOKEN_TYPE_REM_ASSIGN, // %=
 
-	TOK_CATG_AND_ASSIGN,     // &=
-	TOK_CATG_OR_ASSIGN,      // |=
-	TOK_CATG_XOR_ASSIGN,     // ^=
-	TOK_CATG_SHL_ASSIGN,     // <<=
-	TOK_CATG_SHR_ASSIGN,     // >>=
-	TOK_CATG_AND_NOT_ASSIGN, // &^=
+	TOKEN_TYPE_AND_ASSIGN,     // &=
+	TOKEN_TYPE_OR_ASSIGN,      // |=
+	TOKEN_TYPE_XOR_ASSIGN,     // ^=
+	TOKEN_TYPE_SHL_ASSIGN,     // <<=
+	TOKEN_TYPE_SHR_ASSIGN,     // >>=
+	TOKEN_TYPE_AND_NOT_ASSIGN, // &^=
 
-	TOK_CATG_LAND,  // &&
-	TOK_CATG_LOR,   // ||
-	TOK_CATG_RARROW, // ->
-	TOK_CATG_INC,   // ++
-	TOK_CATG_DEC,   // --
+	TOKEN_TYPE_LAND,  // &&
+	TOKEN_TYPE_LOR,   // ||
+	TOKEN_TYPE_RARROW, // ->
+	TOKEN_TYPE_INC,   // ++
+	TOKEN_TYPE_DEC,   // --
 
-	TOK_CATG_EQL,    // ==
-	TOK_CATG_LSS,    // <
-	TOK_CATG_GTR,    // >
-	TOK_CATG_ASSIGN, // =
-	TOK_CATG_NOT,    // !
+	TOKEN_TYPE_EQL,    // ==
+	TOKEN_TYPE_LSS,    // <
+	TOKEN_TYPE_GTR,    // >
+	TOKEN_TYPE_ASSIGN, // =
+	TOKEN_TYPE_NOT,    // !
 
-	TOK_CATG_NEQ,      // !=
-	TOK_CATG_LEQ,      // <=
-	TOK_CATG_GEQ,      // >=
-	TOK_CATG_ELLIPSIS, // ...
+	TOKEN_TYPE_NEQ,      // !=
+	TOKEN_TYPE_LEQ,      // <=
+	TOKEN_TYPE_GEQ,      // >=
 
-	TOK_CATG_LPAREN, // (
-	TOK_CATG_LBRACK, // [
-	TOK_CATG_LBRACE, // {
-	TOK_CATG_COMMA,  // ,
-	TOK_CATG_PERIOD, // .
+	TOKEN_TYPE_operator_end,
 
-	TOK_CATG_RPAREN,    // )
-	TOK_CATG_RBRACK,    // ]
-	TOK_CATG_RBRACE,    // }
-	TOK_CATG_SEMICOLON, // ;
-	TOK_CATG_COLON,     // :
-	TOK_CATG_operator_end,
-
-	TOK_CATG_keyword_beg,
+	TOKEN_TYPE_keyword_beg,
 	// Keywords
-	TOK_CATG_CONST,
-	TOK_CATG_IF,
-	TOK_CATG_ELSE,
-	TOK_CATG_FOR,
-	TOK_CATG_BREAK,
-	TOK_CATG_CONTINUE,
-	TOK_CATG_GOTO,
-	TOK_CATG_RETURN,
-	TOK_CATG_STRUCT,
-	TOK_CATG_UNION,
-	TOK_CATG_ENUM,
-	TOK_CATG_SWITCH,
-	TOK_CATG_CASE,
-	TOK_CATG_DEFAULT,
-	TOK_CATG_WHILE,
-	TOK_CATG_DO,
-	TOK_CATG_VOID,
-	TOK_CATG_STATIC,
-	TOK_CATG_EXTERN,
-	TOK_CATG_REGISTER,
-	TOK_CATG_SIGNED,
-	TOK_CATG_UNSIGNED,
-	TOK_CATG_SIZEOF,
-	TOK_CATG_TYPEDEF,
-	TOK_CATG_VOLATILE,
+	TOKEN_TYPE_CONST,
+	TOKEN_TYPE_IF,
+	TOKEN_TYPE_ELSE,
+	TOKEN_TYPE_FOR,
+	TOKEN_TYPE_BREAK,
+	TOKEN_TYPE_CONTINUE,
+	TOKEN_TYPE_GOTO,
+	TOKEN_TYPE_RETURN,
+	TOKEN_TYPE_STRUCT,
+	TOKEN_TYPE_UNION,
+	TOKEN_TYPE_ENUM,
+	TOKEN_TYPE_SWITCH,
+	TOKEN_TYPE_CASE,
+	TOKEN_TYPE_DEFAULT,
+	TOKEN_TYPE_WHILE,
+	TOKEN_TYPE_DO,
+	TOKEN_TYPE_VOID,
+	TOKEN_TYPE_STATIC,
+	TOKEN_TYPE_EXTERN,
+	TOKEN_TYPE_REGISTER,
+	TOKEN_TYPE_SIGNED,
+	TOKEN_TYPE_UNSIGNED,
+	TOKEN_TYPE_SIZEOF,
+	TOKEN_TYPE_TYPEDEF,
+	TOKEN_TYPE_VOLATILE,
 
-	TOK_CATG_CHAR,
-	TOK_CATG_SHORT,
-	TOK_CATG_INT,
-	TOK_CATG_LONG,
-	TOK_CATG_FLOAT,
-	TOK_CATG_DOUBLE,
+	TOKEN_TYPE_CHAR,
+	TOKEN_TYPE_SHORT,
+	TOKEN_TYPE_INT,
+	TOKEN_TYPE_LONG,
+	TOKEN_TYPE_FLOAT,
+	TOKEN_TYPE_DOUBLE,
 
-	TOK_CATG_keyword_end
-} Token_Catg;
+	TOKEN_TYPE_keyword_end,
+
+    TOKEN_TYPE_end 
+
+    // TODO: Consider the below token types later!
+    //
+    // [TOKEN_TYPE_] = "auto", 
+    //
+    // [TOKEN_TYPE_] = "inline",               // (C99)
+    // [TOKEN_TYPE_] = "restrict",             // (C99)
+    // [TOKEN_TYPE_] = "_Complex",             // (C99)
+    // [TOKEN_TYPE_] = "_Imaginary",           // (C99)
+    // [TOKEN_TYPE_] = "_Bool",                // (C99)(deprecated in C23)
+    //
+    // [TOKEN_TYPE_] = "_Atomic",              // (C11)
+    // [TOKEN_TYPE_] = "_Generic",             // (C11)
+    // [TOKEN_TYPE_] = "_Alignas",             // (C11)(deprecated in C23)
+    // [TOKEN_TYPE_] = "_Alignof",             // (C11)(deprecated in C23)
+    // [TOKEN_TYPE_] = "_Noreturn",            // (C11)(deprecated in C23)
+    // [TOKEN_TYPE_] = "_Static_assert",       // (C11)(deprecated in C23)
+    // [TOKEN_TYPE_] = "_Thread_local",        // (C11)(deprecated in C23)
+    //
+    // [TOKEN_TYPE_] = "_BitInt",              // (C23)
+    // [TOKEN_TYPE_] = "_Decimal128",          // (C23)
+    // [TOKEN_TYPE_] = "_Decimal32",           // (C23)
+    // [TOKEN_TYPE_] = "_Decimal64",           // (C23)
+    // [TOKEN_TYPE_] = "alignas"               // (C23)
+    // [TOKEN_TYPE_] = "alignof",              // (C23)
+    // [TOKEN_TYPE_] = "bool",                 // (C23)
+    // [TOKEN_TYPE_] = "constexpr",            // (C23)
+    // [TOKEN_TYPE_] = "typeof",               // (C23)
+    // [TOKEN_TYPE_] = "typeof_unqual",        // (C23)
+    // [TOKEN_TYPE_] = "thread_local",         // (C23)
+    // [TOKEN_TYPE_] = "true",                 // (C23)
+    // [TOKEN_TYPE_] = "static_assert",        // (C23)
+    // [TOKEN_TYPE_] = "false",                // (C23)
+    // [TOKEN_TYPE_] = "nullptr",              // (C23)
+} TokenType;
+
+#define TOKEN_TYPES_NUM (TOKEN_TYPE_end - TOKEN_TYPE_beg + 1)
 
 typedef struct {
-    const char* start;
-    size_t length;
-    size_t col;
-    size_t row;
-    const Token_Catg catg;  // Token category/type
+    const char* val;
+    const size_t length;
+    const size_t line;
+    const size_t col;
+    const TokenType type;
 } Token;
+
+Token* new_token(const char* val, const size_t length, const size_t line, const size_t col, const TokenType type);
 
 bool is_keyword(Token* tok);
 bool is_operator(Token* tok);

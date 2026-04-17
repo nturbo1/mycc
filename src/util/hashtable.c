@@ -48,7 +48,7 @@ static void ht_delete_bucket_entries(HashTable* ht)
                 prev_entry = curr_entry;
                 curr_entry = curr_entry->next;
                 free((char*) prev_entry->key);
-                free(prev_entry->value);
+                free((char*) prev_entry->value);
                 free(prev_entry);
             }
         }
@@ -61,7 +61,7 @@ static const char* ht_put_ht_bucket_entry(
         HtBucket* buckets,
         const char* key,
         const size_t key_size,
-        void* value,
+        const void* value,
         bool is_expansion
 ) {
     size_t bucket_index = get_ht_bucket_index(key, key_size, ht_capacity);
@@ -166,14 +166,14 @@ static bool ht_expand(HashTable* ht)
 }
 
 #define HT_INITIAL_CAPACITY 16
-HashTable* ht_new()
+HashTable* ht_new(size_t capacity)
 {
     HashTable* ht = malloc(sizeof(HashTable));
     if (ht == NULL)
         return NULL; // TODO: Check for the errors
 
     ht->size = 0;
-    ht->capacity = HT_INITIAL_CAPACITY;
+    ht->capacity = (capacity > 0 ? capacity : HT_INITIAL_CAPACITY);
     ht->buckets = (HtBucket*) calloc(ht->capacity, sizeof(HtBucket));
     if (ht->buckets == NULL)
     {
@@ -194,7 +194,7 @@ void ht_delete(HashTable* ht)
     free(ht);
 }
 
-void* ht_get(const HashTable* ht, const char* key, const size_t key_size)
+const void* ht_get(const HashTable* ht, const char* key, const size_t key_size)
 {
     assert(ht != NULL || "NULL hashtable was passed to ht_get");
     assert(key != NULL || "NULL key was passed to ht_get");
@@ -220,7 +220,7 @@ void* ht_get(const HashTable* ht, const char* key, const size_t key_size)
     return NULL;
 }
 
-const char* ht_put(HashTable* ht, const char* key, const size_t key_size, void* value)
+const char* ht_put(HashTable* ht, const char* key, const size_t key_size, const void* value)
 {
     assert(ht != NULL || "NULL hashtable was passed to ht_put");
     assert(key != NULL || "NULL key was passed to ht_put");
