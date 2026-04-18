@@ -2,6 +2,7 @@
 #include "token.h"
 #include "error.h"
 #include "hashtable.h"
+#include "darray.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stddef.h>
+#include <stdint.h>
 
 extern const char* token_type_name[TOKEN_TYPES_NUM];
 
@@ -107,7 +109,7 @@ static bool is_alpha(char ch)
     return ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
 }
 
-static bool is_digit(char ch)
+static bool is_dec_digit(char ch)
 {
     return '0' <= ch && ch <= '9';
 }
@@ -119,7 +121,7 @@ static bool is_hex_digit(char ch)
 
 static bool is_alnum(char ch)
 {
-    return is_alpha(ch) || is_digit(ch);
+    return is_alpha(ch) || is_dec_digit(ch);
 }
 
 static void skip_whitespace(Scanner* s)
@@ -227,17 +229,119 @@ static const char* scan_char_literal(Scanner* s) {
 }
 
 typedef struct {
-    const char* lit;
-    const size_t lit_len;
+    const long int val;
     TokenType type;
 } NumberScan;
 
-static NumberScan scan_number(Scanner* s) {
-    printf("IMPLEMENT NUMBER SCANNER!!! scanner = %p\n", (void*) s);
-    exit(1);
-    is_hex_digit(0);
-    NumberScan ns = {NULL, 0, 0};
+static NumberScan scan_hex(Scanner* s)
+{
+    // TODO: IMPLEMENT!!! The below is garbage
+    NumberScan ns = {s->ln_offset + 1, is_hex_digit('f')};
     return ns;
+}
+
+static NumberScan scan_bin(Scanner* s)
+{
+    // TODO: IMPLEMENT!!! The below is garbage
+    NumberScan ns = {s->ln_offset + 1, 0};
+    return ns;
+}
+
+static NumberScan scan_oct(Scanner* s)
+{
+    // TODO: IMPLEMENT!!! The below is garbage
+    NumberScan ns = {s->ln_offset + 1, 0};
+    return ns;
+}
+
+static NumberScan scan_float(Scanner* s)
+{
+    // TODO: IMPLEMENT!!! The below is garbage
+    NumberScan ns = {s->ln_offset + 1, 0};
+    return ns;
+}
+
+static NumberScan scan_dec(Scanner* s)
+{
+    char ch = peek_next(s);
+    if (ch == EOF)
+    {
+        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Expected a number.");
+    }
+    else if (!is_dec_digit(ch))
+    {
+        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Non decilman digit detected.");
+    }
+    else
+    {
+        // of type DArray<char>, the actual char value is stored instead of its address here
+        DArray* num_chars = init_darray(NULL, 16, 1);
+        assert(num_chars != NULL);
+        darray_add(num_chars, (void*)(intptr_t) next_char(s), 1);
+        ch = peek_next(s);
+
+        while (is_dec_digit(ch))
+        {
+            darray_add(num_chars, (void*)(intptr_t) next_char(s), 1);
+            ch = peek_next(s);
+        }
+
+        switch (ch) {
+        case ';':
+        case ')':
+        case ']':
+        case '}':
+            printf("CONVERT THE NUMBER TEXT TO DECIMAL VALUE!!!");
+            exit(1);
+            break;
+        default:
+            EXIT_WITH_ERROR(INVALID_NUMBER,
+                            s->ln_offset + 1,
+                            s->col_offset + 1,
+                            "Expected one of ';', ')', ']', '}', or a decimal digit.");
+        }
+    }
+}
+
+static NumberScan scan_number(Scanner* s) {
+    char ch = peek_next(s);
+
+    if (ch == EOF)
+    {
+        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Expected a number.");
+    }
+    else if (ch == '0')
+    {
+        next_char(s); // skip the 0
+        ch = peek_next(s);
+        switch (ch) {
+        case ';':
+        case ')':
+        case ']':
+        case '}': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
+                // [-Werror=free-labels]
+            NumberScan ns = {0, TOKEN_TYPE_INT_LIT};
+            return ns;
+        case 'x':
+        case 'X':
+            return scan_hex(s);
+        case 'b':
+        case 'B':
+            return scan_bin(s);
+        case '.':
+            return scan_float(s);
+        default:
+            return scan_oct(s);
+        }
+    }
+    else if (is_dec_digit(ch))
+    {
+        return scan_dec(s);
+    }
+    else
+    {
+        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Expected a number.");
+    }
 }
 
 // Scans a line (// ...) or mult-line (/* ... */) comment and ignores them.
@@ -263,12 +367,12 @@ scan_again:
     const size_t tok_line = s->ln_offset + 1;
     const size_t tok_col = s->col_offset + 1;
 
-    if (is_digit(ch))
+    if (is_dec_digit(ch))
     {
         NumberScan number = scan_number(s);
         return new_token(
-            number.lit,
-            number.lit_len,
+            (char*)(intptr_t) number.val,
+            1,
             tok_line,
             tok_col,
             number.type

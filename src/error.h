@@ -3,6 +3,7 @@
 
 typedef enum {
     INVALID_IDENTIFIER_NAME,
+    INVALID_NUMBER,
     INVALID_TOKEN
 } Error;
 

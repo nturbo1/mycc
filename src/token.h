@@ -165,8 +165,8 @@ typedef enum {
 #define TOKEN_TYPES_NUM (TOKEN_TYPE_end - TOKEN_TYPE_beg + 1)
 
 typedef struct {
-    const char* val;
-    const size_t length;
+    const char* val; // Stores a pointer to a string if the value is text and the actual integer/float value if the value is a number.
+    const size_t length; // Length of the string if the value is a pointer to a string.
     const size_t line;
     const size_t col;
     const TokenType type;
