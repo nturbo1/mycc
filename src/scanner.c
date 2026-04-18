@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <math.h>
 
 extern const char* token_type_name[TOKEN_TYPES_NUM];
 
@@ -228,6 +229,154 @@ static const char* scan_char_literal(Scanner* s) {
     return NULL;
 }
 
+typedef enum { BASE_2, BASE_8, BASE_10, BASE_16 } NumBase;
+
+static long int char_to_dig(char ch, NumBase base, size_t line, size_t col)
+{
+    switch (base) {
+    case BASE_10:
+        switch (ch) {
+        case '0':
+            return 0;
+        case '1':
+            return 1;
+        case '2':
+            return 2;
+        case '3':
+            return 3;
+        case '4':
+            return 4;
+        case '5':
+            return 5;
+        case '6':
+            return 6;
+        case '7':
+            return 7;
+        case '8':
+            return 8;
+        case '9':
+            return 9;
+        default:
+            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non decimal digit detected");
+        }
+    case BASE_2:
+        switch (ch) {
+        case '0':
+            return 0;
+        case '1':
+            return 1;
+        default:
+            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non binary digit detected");
+        }
+    case BASE_8:
+        switch (ch) {
+        case '0':
+            return 0;
+        case '1':
+            return 1;
+        case '2':
+            return 2;
+        case '3':
+            return 3;
+        case '4':
+            return 4;
+        case '5':
+            return 5;
+        case '6':
+            return 6;
+        case '7':
+            return 7;
+        default:
+            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non octadecimal digit detected");
+        }
+    case BASE_16:
+        switch (ch) {
+        case '0':
+            return 0;
+        case '1':
+            return 1;
+        case '2':
+            return 2;
+        case '3':
+            return 3;
+        case '4':
+            return 4;
+        case '5':
+            return 5;
+        case '6':
+            return 6;
+        case '7':
+            return 7;
+        case '8':
+            return 8;
+        case '9':
+            return 9;
+        case 'a':
+        case 'A':
+            return 10;
+        case 'b':
+        case 'B':
+            return 11;
+        case 'c':
+        case 'C':
+            return 12;
+        case 'd':
+        case 'D':
+            return 13;
+        case 'e':
+        case 'E':
+            return 14;
+        case 'f':
+        case 'F':
+            return 15;
+        default:
+            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non hexadecimal digit detected");
+        }
+        break;
+    default:
+        printf("Unknown number base were passed to char to digit conversion function: %d\n", base);
+        abort();
+    }
+}
+
+// Converts a given char sequence, num_chars, into a number value according to a given base.
+//
+// The num_chars is expected to be of type DArray<char> meaning it directly stores the char values as (void*) in the array buffer. So,
+// the elements should be properly reverted back to char type when accessed from the array.
+static long int txt_to_num(DArray* num_chars, NumBase base, size_t line, size_t start_col)
+{
+    assert(num_chars != NULL);
+    long int radix = 10;
+    switch (base) {
+    case BASE_10:
+        break;
+    case BASE_2:
+        radix = 2;
+        break;
+    case BASE_8:
+        radix = 8;
+        break;
+    case BASE_16:
+        radix = 16;
+        break;
+    default:
+        printf("Unknown number base were passed to char sequence to number conversion function: %d\n", base);
+        abort();
+    }
+
+    long int number = 0;
+    size_t num_chars_len = num_chars->length;
+
+    for (size_t i = 0; i < num_chars_len; ++i)
+    {
+        char ch = (char)(intptr_t) darray_get_at(num_chars, num_chars_len - 1 - i);
+        long int digit = char_to_dig(ch, base, line, start_col + i);
+        number += ((long int) pow(radix, i) * digit);
+    }
+
+    return number;
+}
+
 typedef struct {
     const long int val;
     TokenType type;
@@ -279,6 +428,8 @@ static NumberScan scan_dec(Scanner* s)
         assert(num_chars != NULL);
         darray_add(num_chars, (void*)(intptr_t) next_char(s), 1);
         ch = peek_next(s);
+        size_t line = s->ln_offset + 1;
+        size_t start_col = s->col_offset + 1;
 
         while (is_dec_digit(ch))
         {
@@ -290,9 +441,10 @@ static NumberScan scan_dec(Scanner* s)
         case ';':
         case ')':
         case ']':
-        case '}':
-            printf("CONVERT THE NUMBER TEXT TO DECIMAL VALUE!!!");
-            exit(1);
+        case '}': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
+                // [-Werror=free-labels]
+            NumberScan ns = { .val = txt_to_num(num_chars, BASE_10, line, start_col), .type = TOKEN_TYPE_INT_LIT };
+            return ns;
             break;
         default:
             EXIT_WITH_ERROR(INVALID_NUMBER,

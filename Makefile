@@ -10,6 +10,7 @@ export RELEASE_FLAGS
 
 ############################################# SOURCE CONFIGS #############################################
 INCLUDES 	:= -Isrc/include
+LDLIBS 		:= -lm
 SRCDIR 		:= src
 BUILDDIR 	:= build
 
@@ -52,7 +53,7 @@ clean:
 #########################################################################################################
 
 $(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c | $(BUILDDIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
