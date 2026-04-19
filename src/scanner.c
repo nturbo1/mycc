@@ -15,48 +15,6 @@
 
 extern const char* token_type_name[TOKEN_TYPES_NUM];
 
-// static const char* operator[] = {
-//     [TOKEN_TYPE_ADD] = "+",
-//     [TOKEN_TYPE_SUB] = "-",
-//     [TOKEN_TYPE_MUL] = "*",
-//     [TOKEN_TYPE_QUO] = "/",
-//     [TOKEN_TYPE_REM] = "%",
-//     [TOKEN_TYPE_AND] = "&",
-//     [TOKEN_TYPE_OR] = "|",
-//     [TOKEN_TYPE_XOR] = "^",
-//     [TOKEN_TYPE_SHL] = "<<",
-//     [TOKEN_TYPE_SHR] = ">>",
-//     [TOKEN_TYPE_AND_NOT] = "&^",
-//
-//     [TOKEN_TYPE_ADD_ASSIGN] = "+=",
-//     [TOKEN_TYPE_SUB_ASSIGN] = "-=",
-//     [TOKEN_TYPE_MUL_ASSIGN] = "*=",
-//     [TOKEN_TYPE_QUO_ASSIGN] = "/=",
-//     [TOKEN_TYPE_REM_ASSIGN] = "%=",
-//     [TOKEN_TYPE_AND_ASSIGN] = "&=",
-//     [TOKEN_TYPE_OR_ASSIGN] = "|=",
-//     [TOKEN_TYPE_XOR_ASSIGN] = "^=",
-//     [TOKEN_TYPE_SHL_ASSIGN] = "<<=",
-//     [TOKEN_TYPE_SHR_ASSIGN] = ">>=",
-//     [TOKEN_TYPE_AND_NOT_ASSIGN] = "&^=",
-//
-//     [TOKEN_TYPE_LAND] = "&&",
-//     [TOKEN_TYPE_LOR] = "||",
-//     [TOKEN_TYPE_RARROW] = "->",
-//     [TOKEN_TYPE_INC] = "++",
-//     [TOKEN_TYPE_DEC] = "--",
-//
-//     [TOKEN_TYPE_EQL] = "==",
-//     [TOKEN_TYPE_LSS] = "<",
-//     [TOKEN_TYPE_GTR] = ">",
-//     [TOKEN_TYPE_ASSIGN] = "=",
-//     [TOKEN_TYPE_NOT] = "!",
-//
-//     [TOKEN_TYPE_NEQ] = "!=",
-//     [TOKEN_TYPE_LEQ] = "<=",
-//     [TOKEN_TYPE_GEQ] = ">=",
-// };
-
 // Fills the current buffer that the scanner is currently processing with the next chunk of bytes from
 // the src file.
 static void fill_buffer(Scanner* s)

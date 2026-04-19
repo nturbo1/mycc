@@ -30,8 +30,13 @@ void compile(const char* filepath)
 
     Token* tok = next_tok(scanner);
     while (tok != NULL) {
-        printf("Scanned token: {val: %s, length: %zu, line: %zu, col: %zu, type: %d}\n",
-               tok->val, tok->length, tok->line, tok->col, tok->type);
+        if (tok->type == TOKEN_TYPE_INT_LIT) {
+            printf("Scanned token: {val: %ld, length: %zu, line: %zu, col: %zu, type: %d}\n",
+                   (long int)(intptr_t) tok->val, tok->length, tok->line, tok->col, tok->type);
+        } else {
+            printf("Scanned token: {val: %s, length: %zu, line: %zu, col: %zu, type: %d}\n",
+                   tok->val, tok->length, tok->line, tok->col, tok->type);
+        }
         tok = next_tok(scanner);
     }
 }
