@@ -1,5 +1,5 @@
 # NCTest
-This is my small testing framework/library for my C projects. Currently doesn't support C++ yet.
+This is my small testing framework/library for my C projects.
 
 ## Usage
 You should write your tests in your test files in a format as given below:

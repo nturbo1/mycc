@@ -58,4 +58,3 @@ dkms.conf
 
 # Build directories
 build
-bin
