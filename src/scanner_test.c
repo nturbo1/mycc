@@ -29,7 +29,7 @@ TEST(init_scanner,
     fclose(s->file);
 }
 
-TEST(scan_numbers,
+TEST(scan_number_literals,
     "GIVEN tokens of numbers with different bases and formats, "
     "WHEN scan the tokens in a file, "
     "THEN return correct Token values.")
