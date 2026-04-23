@@ -1,5 +1,5 @@
-#ifndef SRC_LEXER_H
-#define SRC_LEXER_H
+#ifndef SRC_SCANNER_H
+#define SRC_SCANNER_H
 
 #include "token.h"
 #include "error.h"
@@ -13,6 +13,7 @@
 
 typedef struct {
     FILE* file;
+    const char* filepath;
     // Contains 2 buffers:  Buffer 0              Buffer 1
     //                     [ | | | ... | | | |   | |   | ... | | |    ]
     //                      0 1 2 ........... n-1 n n+1 ......... 2n-1
@@ -24,8 +25,11 @@ typedef struct {
     HashTable* keywords;    // of type HashTable<const char*, TokenType>
                             // IMPORTANT!!!: Values shouldn't be dereferenced or freed because they don't store memory addresses,
                             // rather TokenType enum values.
+    Error err;
 } Scanner;
 
+// Scans the next token in the src given by a scanner.
+// If there is a lexical error, it sets s->err to the appropriate Error and returns NULL.
 Token* next_tok(Scanner* s);
 
 // Initializes a new scanner with correct initial values and opens a src file with a given filepath.
@@ -35,6 +39,4 @@ Token* next_tok(Scanner* s);
 // It will exit in case of any IO or memory error.
 Scanner* init_scanner(Scanner* s, const char* filepath);
 
-void error(Scanner* s, Error err, Token tok, const char* msg);
-
-#endif
+#endif // SRC_SCANNER_H

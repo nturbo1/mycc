@@ -97,6 +97,9 @@ static void skip_whitespace(Scanner* s)
 // An identifier is of the form
 //                                  [a-zA-Z]+[a-zA-Z0-9]*
 // .
+//
+// If there is a lexical error, it sets s->err to the appropriate Error value.
+// IT DOES NOT RESET s->err BEFORE SCANNING!!!
 static const char* scan_identifier(Scanner* s)
 {
     char idf_name_buf[MAX_IDENTIFIER_NAME_SIZE];
@@ -105,22 +108,14 @@ static const char* scan_identifier(Scanner* s)
     char ch = peek_next(s);
 
     if (ch == EOF) {
-        EXIT_WITH_ERROR(
-            INVALID_IDENTIFIER_NAME,
-            s->ln_offset + 1,
-            s->col_offset + 1,
-            "Expected an identifier."
-        );
+        s->err = INVALID_IDENTIFIER_NAME;
+        return NULL;
     }
 
     if (ch != '_' && !is_alpha(ch))
     {
-        EXIT_WITH_ERROR(
-            INVALID_IDENTIFIER_NAME,
-            s->ln_offset + 1,
-            s->col_offset + 1,
-            "An identifier must start with '_' (underscore) or an alphabetic character!"
-        );
+        s->err = INVALID_IDENTIFIER_NAME;
+        return NULL;
     }
     ch = next_char(s);
 
@@ -143,12 +138,8 @@ static const char* scan_identifier(Scanner* s)
             default:
                 if (ch == '_' || is_alnum(ch)) {
                     if (idf_name_len == MAX_IDENTIFIER_NAME_SIZE) {
-                        EXIT_WITH_ERROR(
-                            INVALID_IDENTIFIER_NAME,
-                            s->ln_offset + 1,
-                            s->col_offset + 1,
-                            "Identifier name is too long!"
-                        );
+                        s->err = INVALID_IDENTIFIER_NAME;
+                        return NULL;
                     }
                     ch = next_char(s);
                     idf_name_buf[idf_name_len] = ch;
@@ -158,12 +149,8 @@ static const char* scan_identifier(Scanner* s)
                     idf_end = true;
                 }
                 else {
-                    EXIT_WITH_ERROR(
-                        INVALID_IDENTIFIER_NAME,
-                        s->ln_offset + 1,
-                        s->col_offset + 1,
-                        "An identifier must contain '_' or alphanumeric characters!"
-                    );
+                    s->err = INVALID_IDENTIFIER_NAME;
+                    return NULL;
                 }
         }
     }
@@ -189,7 +176,10 @@ static const char* scan_char_literal(Scanner* s) {
 
 typedef enum { BASE_2, BASE_8, BASE_10, BASE_16 } NumBase;
 
-static long int char_to_dig(char ch, NumBase base, size_t line, size_t col)
+// Converts a char to a digit.
+// Updates the error value pointed by a given err parameter accordingly, if the character is
+// not a digit.
+static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
 {
     switch (base) {
     case BASE_10:
@@ -215,7 +205,8 @@ static long int char_to_dig(char ch, NumBase base, size_t line, size_t col)
         case '9':
             return 9;
         default:
-            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non decimal digit detected");
+            *err_ptr = INVALID_NUMBER;
+            return 0;
         }
     case BASE_2:
         switch (ch) {
@@ -224,7 +215,8 @@ static long int char_to_dig(char ch, NumBase base, size_t line, size_t col)
         case '1':
             return 1;
         default:
-            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non binary digit detected");
+            *err_ptr = INVALID_NUMBER;
+            return 0;
         }
     case BASE_8:
         switch (ch) {
@@ -245,7 +237,8 @@ static long int char_to_dig(char ch, NumBase base, size_t line, size_t col)
         case '7':
             return 7;
         default:
-            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non octadecimal digit detected");
+            *err_ptr = INVALID_NUMBER;
+            return 0;
         }
     case BASE_16:
         switch (ch) {
@@ -288,7 +281,8 @@ static long int char_to_dig(char ch, NumBase base, size_t line, size_t col)
         case 'F':
             return 15;
         default:
-            EXIT_WITH_ERROR(INVALID_NUMBER, line, col, "Char to digit conversion failed: non hexadecimal digit detected");
+            *err_ptr = INVALID_NUMBER;
+            return 0;
         }
         break;
     default:
@@ -299,9 +293,13 @@ static long int char_to_dig(char ch, NumBase base, size_t line, size_t col)
 
 // Converts a given char sequence, num_chars, into a number value according to a given base.
 //
-// The num_chars is expected to be of type DArray<char> meaning it directly stores the char values as (void*) in the array buffer. So,
-// the elements should be properly reverted back to char type when accessed from the array.
-static long int txt_to_num(DArray* num_chars, NumBase base, size_t line, size_t start_col)
+// The num_chars is expected to be of type DArray<char> meaning it directly stores the char values
+// as (void*) in the array buffer. So, the elements should be properly reverted back to char type
+// when accessed from the array.
+//
+// Updates the error value pointed by a given err parameter, if the char sequence contains an
+// invalid or non-digit character.
+static long int txt_to_num(DArray* num_chars, NumBase base, Error* err_ptr)
 {
     assert(num_chars != NULL);
     long int radix = 10;
@@ -327,8 +325,14 @@ static long int txt_to_num(DArray* num_chars, NumBase base, size_t line, size_t 
 
     for (size_t i = 0; i < num_chars_len; ++i)
     {
-        char ch = (char)(intptr_t) darray_get_at(num_chars, num_chars_len - 1 - i);
-        long int digit = char_to_dig(ch, base, line, start_col + i);
+        char ch = * (char*) darray_get_at(num_chars, num_chars_len - 1 - i);
+
+        *err_ptr = NO_ERROR;
+        long int digit = char_to_dig(err_ptr, ch, base);
+        if (*err_ptr != NO_ERROR) {
+            return 0;
+        }
+
         number += ((long int) pow(radix, i) * digit);
     }
 
@@ -368,30 +372,36 @@ static NumberScan scan_float(Scanner* s)
     return ns;
 }
 
+// Scans for a decimal number.
+// Sets the scanner error (s->err) to an appropriate error value, if there is a lexical error.
 static NumberScan scan_dec(Scanner* s)
 {
     char ch = peek_next(s);
+
     if (ch == EOF)
     {
-        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Expected a number.");
+        s->err = INVALID_NUMBER;
+        NumberScan ns = {0, 0}; // value doesn't matter here.
+        return ns;
     }
     else if (!is_dec_digit(ch))
     {
-        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Non decilman digit detected.");
+        s->err = INVALID_NUMBER;
+        NumberScan ns = {0, 0}; // value doesn't matter here.
+        return ns;
     }
     else
     {
-        // of type DArray<char>, the actual char value is stored instead of its address here
         DArray* num_chars = init_darray(NULL, 16, 1);
         assert(num_chars != NULL);
-        darray_add(num_chars, (void*)(intptr_t) next_char(s), 1);
+        ch = next_char(s);
+        darray_add(num_chars, &ch, 1);
         ch = peek_next(s);
-        size_t line = s->ln_offset + 1;
-        size_t start_col = s->col_offset + 1;
 
         while (is_dec_digit(ch))
         {
-            darray_add(num_chars, (void*)(intptr_t) next_char(s), 1);
+            ch = next_char(s);
+            darray_add(num_chars, (void*) &ch, 1);
             ch = peek_next(s);
         }
 
@@ -399,26 +409,38 @@ static NumberScan scan_dec(Scanner* s)
         case ';':
         case ')':
         case ']':
-        case '}': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
+        case '}':; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
                 // [-Werror=free-labels]
-            NumberScan ns = { .val = txt_to_num(num_chars, BASE_10, line, start_col), .type = TOKEN_TYPE_INT_LIT };
+            NumberScan ns = {
+                .val = txt_to_num(num_chars, BASE_10, &s->err),
+                .type = TOKEN_TYPE_INT_LIT
+            };
             return ns;
-            break;
         default:
-            EXIT_WITH_ERROR(INVALID_NUMBER,
-                            s->ln_offset + 1,
-                            s->col_offset + 1,
-                            "Expected one of ';', ')', ']', '}', or a decimal digit.");
+            if (is_whitespace(ch)) {
+                NumberScan ns1 = {
+                    .val = txt_to_num(num_chars, BASE_10, &s->err),
+                    .type = TOKEN_TYPE_INT_LIT
+                };
+                return ns1;
+            }
+            s->err = INVALID_NUMBER;
+            NumberScan ns0 = {0, 0}; // value doesn't matter here.
+            return ns0;
         }
     }
 }
 
+// Scans for a number (decimal, hex, binary, octal).
+// Sets the scanner error (s->err) to an appropriate error value, if there is a lexical error.
 static NumberScan scan_number(Scanner* s) {
     char ch = peek_next(s);
 
+    NumberScan ns0 = {0, 0}; // value doesn't matter here, returned in case of an error
     if (ch == EOF)
     {
-        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Expected a number.");
+        s->err = INVALID_NUMBER;
+        return ns0;
     }
     else if (ch == '0')
     {
@@ -450,7 +472,8 @@ static NumberScan scan_number(Scanner* s) {
     }
     else
     {
-        EXIT_WITH_ERROR(INVALID_NUMBER, s->ln_offset + 1, s->col_offset + 1, "Expected a number.");
+        s->err = INVALID_NUMBER;
+        return ns0;
     }
 }
 
@@ -467,6 +490,8 @@ static void scan_comment(Scanner* s, bool is_multiline) {
 Token* next_tok(Scanner* s)
 {
 scan_again:
+    s->err = NO_ERROR;
+
     skip_whitespace(s);
     char ch = peek_next(s);
 
@@ -479,7 +504,13 @@ scan_again:
 
     if (is_dec_digit(ch))
     {
+        s->err = NO_ERROR;
+
         NumberScan number = scan_number(s);
+        if (s->err != NO_ERROR) {
+            return NULL;
+        }
+
         return new_token(
             (char*)(intptr_t) number.val,
             1,
@@ -602,12 +633,8 @@ scan_again:
                     }
                     else
                     {
-                        EXIT_WITH_ERROR(
-                            INVALID_TOKEN,
-                            tok_line,
-                            tok_col,
-                            "Expected a member name."
-                        );
+                        s->err = INVALID_TOKEN;
+                        return NULL;
                     }
                 }
                 else
@@ -1107,6 +1134,8 @@ Scanner* init_scanner(Scanner* s, const char* filepath)
     }
 
     s->file = src_file;
+    s->filepath = filepath;
+    s->err = NO_ERROR;
     s->bf_end = SCANNER_BUFFER_SIZE;
     s->next = 0;
 
