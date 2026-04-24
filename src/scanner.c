@@ -463,6 +463,10 @@ static NumberScan scan_number(Scanner* s) {
         case '.':
             return scan_float(s);
         default:
+            if (is_whitespace(ch)) {
+                NumberScan ns1 = { 0, TOKEN_TYPE_INT_LIT };
+                return ns1;
+            }
             return scan_oct(s);
         }
     }
