@@ -83,6 +83,11 @@ static bool is_bin_digit(char ch)
     return ch == '0' || ch == '1';
 }
 
+static bool is_oct_digit(char ch)
+{
+    return '0' <= ch && ch <= '7';
+}
+
 static bool is_alnum(char ch)
 {
     return is_alpha(ch) || is_dec_digit(ch);
@@ -349,10 +354,12 @@ typedef struct {
     TokenType type;
 } NumberScan;
 
-// Scans a hexadecimal integer literal.
+// Scans an integer literal in a given base.
 // If there's a lexical error, it sets the scanner error, s->err, to an appropriate error type and
 // returns.
-static NumberScan scan_hex(Scanner* s)
+// The `is_digit` parameter is a function that determines if a character represents a valid digit
+// in the given base.
+static NumberScan scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
 {
     s->err = NO_ERROR;
     char ch = peek_next(s);
@@ -362,7 +369,7 @@ static NumberScan scan_hex(Scanner* s)
         s->err = INVALID_NUMBER;
         return ns0;
     }
-    if (!is_hex_digit(ch)) {
+    if (!is_digit(ch)) {
         s->err = INVALID_NUMBER;
         return ns0;
     }
@@ -373,7 +380,7 @@ static NumberScan scan_hex(Scanner* s)
     darray_add(num_chars, &ch, 1);
     ch = peek_next(s);
 
-    while (is_hex_digit(ch))
+    while (is_digit(ch))
     {
         ch = next_char(s);
         darray_add(num_chars, (void*) &ch, 1);
@@ -387,14 +394,14 @@ static NumberScan scan_hex(Scanner* s)
     case '}':; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
             // [-Werror=free-labels]
         NumberScan ns = {
-            .val = txt_to_num(num_chars, BASE_16, &s->err),
+            .val = txt_to_num(num_chars, base, &s->err),
             .type = TOKEN_TYPE_INT_LIT
         };
         return ns;
     default:
         if (is_whitespace(ch)) {
             NumberScan ns1 = {
-                .val = txt_to_num(num_chars, BASE_16, &s->err),
+                .val = txt_to_num(num_chars, base, &s->err),
                 .type = TOKEN_TYPE_INT_LIT
             };
             return ns1;
@@ -404,67 +411,24 @@ static NumberScan scan_hex(Scanner* s)
     }
 }
 
-// Scans for a binary integer literal.
-// If there's lexical error, it sets the scanner error, s->err, to an appropriate error type and
-// returns.
-// The returned integer value evaluated from the scanned binary literal is an unsigned integer value.
+static NumberScan scan_hex(Scanner* s)
+{
+    return scan_number_lit(s, BASE_16, is_hex_digit);
+}
+
 static NumberScan scan_bin(Scanner* s)
 {
-    s->err = NO_ERROR;
-    char ch = peek_next(s);
-    NumberScan ns0 = {0, 0}; // value doesn't matter, returned in case of an error
-
-    if (ch == EOF) {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-    if (!is_bin_digit(ch)) {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-
-    DArray* num_chars = init_darray(NULL, 16, 1);
-    assert(num_chars != NULL);
-    ch = next_char(s);
-    darray_add(num_chars, &ch, 1);
-    ch = peek_next(s);
-
-    while (is_bin_digit(ch))
-    {
-        ch = next_char(s);
-        darray_add(num_chars, (void*) &ch, 1);
-        ch = peek_next(s);
-    }
-
-    switch (ch) {
-    case ';':
-    case ')':
-    case ']':
-    case '}':; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
-            // [-Werror=free-labels]
-        NumberScan ns = {
-            .val = txt_to_num(num_chars, BASE_2, &s->err),
-            .type = TOKEN_TYPE_INT_LIT
-        };
-        return ns;
-    default:
-        if (is_whitespace(ch)) {
-            NumberScan ns1 = {
-                .val = txt_to_num(num_chars, BASE_2, &s->err),
-                .type = TOKEN_TYPE_INT_LIT
-            };
-            return ns1;
-        }
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
+    return scan_number_lit(s, BASE_2, is_bin_digit);
 }
 
 static NumberScan scan_oct(Scanner* s)
 {
-    // TODO: IMPLEMENT!!! The below is garbage
-    NumberScan ns = {s->ln_offset + 1, 0};
-    return ns;
+    return scan_number_lit(s, BASE_8, is_oct_digit);
+}
+
+static NumberScan scan_dec(Scanner* s)
+{
+    return scan_number_lit(s, BASE_10, is_dec_digit);
 }
 
 static NumberScan scan_float(Scanner* s)
@@ -472,63 +436,6 @@ static NumberScan scan_float(Scanner* s)
     // TODO: IMPLEMENT!!! The below is garbage
     NumberScan ns = {s->ln_offset + 1, 0};
     return ns;
-}
-
-// Scans for a decimal number.
-// Sets the scanner error (s->err) to an appropriate error value, if there is a lexical error.
-static NumberScan scan_dec(Scanner* s)
-{
-    char ch = peek_next(s);
-    NumberScan ns0 = {0, 0}; // value doesn't matter here, return in case of an error
-
-    if (ch == EOF)
-    {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-    else if (!is_dec_digit(ch))
-    {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-    else
-    {
-        DArray* num_chars = init_darray(NULL, 16, 1);
-        assert(num_chars != NULL);
-        ch = next_char(s);
-        darray_add(num_chars, &ch, 1);
-        ch = peek_next(s);
-
-        while (is_dec_digit(ch))
-        {
-            ch = next_char(s);
-            darray_add(num_chars, (void*) &ch, 1);
-            ch = peek_next(s);
-        }
-
-        switch (ch) {
-        case ';':
-        case ')':
-        case ']':
-        case '}':; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
-                // [-Werror=free-labels]
-            NumberScan ns = {
-                .val = txt_to_num(num_chars, BASE_10, &s->err),
-                .type = TOKEN_TYPE_INT_LIT
-            };
-            return ns;
-        default:
-            if (is_whitespace(ch)) {
-                NumberScan ns1 = {
-                    .val = txt_to_num(num_chars, BASE_10, &s->err),
-                    .type = TOKEN_TYPE_INT_LIT
-                };
-                return ns1;
-            }
-            s->err = INVALID_NUMBER;
-            return ns0;
-        }
-    }
 }
 
 // Scans for a number (decimal, hex, binary, octal).

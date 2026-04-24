@@ -36,7 +36,7 @@ typedef struct {
 } ScanNumberLiteralsTestData;
 
 static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
-    .size = 35,
+    .size = 45,
     .nums_txt = (const char *const[]) {
         // Decimals
         [0] = "0",
@@ -77,7 +77,19 @@ static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
         [31] = "0b100000",              // == 32
         [32] = "0b011101",              // == 29
         [33] = "0b111001001101010010",  // 234322
-        [34] = "0B111001001101010010"   // 234322
+        [34] = "0B111001001101010010",  // 234322
+
+        // Octadecimal
+        [35] = "00",        // == 0
+        [36] = "01",        // == 1
+        [37] = "02",        // == 2
+        [38] = "03",        // == 3
+        [39] = "04",        // == 4
+        [40] = "05",        // == 5
+        [41] = "06",        // == 6
+        [42] = "07",        // == 7
+        [43] = "0711522",    // == 234322
+        [44] = "042536033",  // == 9092123
     },
     .num_tokens = (const Token[]) {
         // Decimals
@@ -257,6 +269,58 @@ static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
         },
         [34] = {
             .val = (const char*) (intptr_t) 234322,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+
+        // Octadecimal
+        [35] = {
+            .val = (const char*) (intptr_t) 0,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [36] = {
+            .val = (const char*) (intptr_t) 1,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [37] = {
+            .val = (const char*) (intptr_t) 2,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [38] = {
+            .val = (const char*) (intptr_t) 3,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [39] = {
+            .val = (const char*) (intptr_t) 4,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [40] = {
+            .val = (const char*) (intptr_t) 5,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [41] = {
+            .val = (const char*) (intptr_t) 6,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [42] = {
+            .val = (const char*) (intptr_t) 7,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [43] = {
+            .val = (const char*) (intptr_t) 234322,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [44] = {
+            .val = (const char*) (intptr_t) 9092123,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
         },
