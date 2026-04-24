@@ -36,7 +36,7 @@ typedef struct {
 } ScanNumberLiteralsTestData;
 
 static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
-    .size = 14,
+    .size = 27,
     .nums_txt = (const char *const[]) {
         // Decimals
         [0] = "0",
@@ -53,106 +53,161 @@ static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
         [11] = "69",
         [12] = "234322",
         [13] = "9092123",
+
+        // Hexadecimals
+        [14] = "0x12",      // == 18
+        [15] = "0x325",     // == 805
+        [16] = "0xff95",    // == 65429
+        [17] = "0xFF95",    // == 65429
+        [18] = "0x0",       // == 0
+        [19] = "0x1",       // == 1
+        [20] = "0x2",       // == 2
+        [21] = "0x9",       // == 9
+        [22] = "0xacdef",   // == 708079
+        [23] = "0xaCdEF",   // == 708079
+        [24] = "0x8ABC1B",   // == 9092123
+        [25] = "0x8abC1B",   // == 9092123
+        [26] = "0x39352",   // == 234322
     },
     .num_tokens = (const Token[]) {
+        // Decimals
         [0] = {
             .val = (const char*) (intptr_t) 0,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [1] = {
             .val = (const char*) (intptr_t) 1,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [2] = {
             .val = (const char*) (intptr_t) 2,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [3] = {
             .val = (const char*) (intptr_t) 3,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [4] = {
             .val = (const char*) (intptr_t) 4,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [5] = {
             .val = (const char*) (intptr_t) 5,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [6] = {
             .val = (const char*) (intptr_t) 6,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [7] = {
             .val = (const char*) (intptr_t) 7,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [8] = {
             .val = (const char*) (intptr_t) 8,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [9] = {
             .val = (const char*) (intptr_t) 9,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [10] = {
             .val = (const char*) (intptr_t) 10,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [11] = {
             .val = (const char*) (intptr_t) 69,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [12] = {
             .val = (const char*) (intptr_t) 234322,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
         },
         [13] = {
             .val = (const char*) (intptr_t) 9092123,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
-            // THE REST OF THE FIELDS ARE NOT IMPORTANT FOR THIS TEST CASE,
-            // SO THEY'RE NOT SET AND TESTED!
-        }
+        },
+
+        // Hexadecimals
+        [14] = {
+            .val = (const char*) (intptr_t) 18,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [15] = {
+            .val = (const char*) (intptr_t) 805,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [16] = {
+            .val = (const char*) (intptr_t) 65429,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [17] = {
+            .val = (const char*) (intptr_t) 65429,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [18] = {
+            .val = (const char*) (intptr_t) 0,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [19] = {
+            .val = (const char*) (intptr_t) 1,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [20] = {
+            .val = (const char*) (intptr_t) 2,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [21] = {
+            .val = (const char*) (intptr_t) 9,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [22] = {
+            .val = (const char*) (intptr_t) 708079,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [23] = {
+            .val = (const char*) (intptr_t) 708079,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [24] = {
+            .val = (const char*) (intptr_t) 9092123,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [25] = {
+            .val = (const char*) (intptr_t) 9092123,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [26] = {
+            .val = (const char*) (intptr_t) 234322,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
     }
 };
 

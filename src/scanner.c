@@ -344,11 +344,59 @@ typedef struct {
     TokenType type;
 } NumberScan;
 
+// Scans a hexadecimal integer literal.
+// If there's a lexical error, it sets the scanner error, s->err, to an appropriate error type and
+// returns.
 static NumberScan scan_hex(Scanner* s)
 {
-    // TODO: IMPLEMENT!!! The below is garbage
-    NumberScan ns = {s->ln_offset + 1, is_hex_digit('f')};
-    return ns;
+    s->err = NO_ERROR;
+    char ch = peek_next(s);
+    NumberScan ns0 = {0, 0}; // value doesn't matter, returned in case of an error
+
+    if (ch == EOF) {
+        s->err = INVALID_NUMBER;
+        return ns0;
+    }
+    if (!is_hex_digit(ch)) {
+        s->err = INVALID_NUMBER;
+        return ns0;
+    }
+
+    DArray* num_chars = init_darray(NULL, 16, 1);
+    assert(num_chars != NULL);
+    ch = next_char(s);
+    darray_add(num_chars, &ch, 1);
+    ch = peek_next(s);
+
+    while (is_hex_digit(ch))
+    {
+        ch = next_char(s);
+        darray_add(num_chars, (void*) &ch, 1);
+        ch = peek_next(s);
+    }
+
+    switch (ch) {
+    case ';':
+    case ')':
+    case ']':
+    case '}':; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
+            // [-Werror=free-labels]
+        NumberScan ns = {
+            .val = txt_to_num(num_chars, BASE_16, &s->err),
+            .type = TOKEN_TYPE_INT_LIT
+        };
+        return ns;
+    default:
+        if (is_whitespace(ch)) {
+            NumberScan ns1 = {
+                .val = txt_to_num(num_chars, BASE_16, &s->err),
+                .type = TOKEN_TYPE_INT_LIT
+            };
+            return ns1;
+        }
+        s->err = INVALID_NUMBER;
+        return ns0;
+    }
 }
 
 static NumberScan scan_bin(Scanner* s)
@@ -377,18 +425,17 @@ static NumberScan scan_float(Scanner* s)
 static NumberScan scan_dec(Scanner* s)
 {
     char ch = peek_next(s);
+    NumberScan ns0 = {0, 0}; // value doesn't matter here, return in case of an error
 
     if (ch == EOF)
     {
         s->err = INVALID_NUMBER;
-        NumberScan ns = {0, 0}; // value doesn't matter here.
-        return ns;
+        return ns0;
     }
     else if (!is_dec_digit(ch))
     {
         s->err = INVALID_NUMBER;
-        NumberScan ns = {0, 0}; // value doesn't matter here.
-        return ns;
+        return ns0;
     }
     else
     {
@@ -425,7 +472,6 @@ static NumberScan scan_dec(Scanner* s)
                 return ns1;
             }
             s->err = INVALID_NUMBER;
-            NumberScan ns0 = {0, 0}; // value doesn't matter here.
             return ns0;
         }
     }
@@ -456,9 +502,11 @@ static NumberScan scan_number(Scanner* s) {
             return ns;
         case 'x':
         case 'X':
+            next_char(s); // skip 'x' or 'X'
             return scan_hex(s);
         case 'b':
         case 'B':
+            next_char(s); // skip 'b' or 'B'
             return scan_bin(s);
         case '.':
             return scan_float(s);
