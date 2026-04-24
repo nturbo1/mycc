@@ -36,7 +36,7 @@ typedef struct {
 } ScanNumberLiteralsTestData;
 
 static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
-    .size = 27,
+    .size = 35,
     .nums_txt = (const char *const[]) {
         // Decimals
         [0] = "0",
@@ -68,6 +68,16 @@ static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
         [24] = "0x8ABC1B",   // == 9092123
         [25] = "0x8abC1B",   // == 9092123
         [26] = "0x39352",   // == 234322
+
+        // Binary integers
+        [27] = "0b0",                   // == 0
+        [28] = "0b00000",               // == 0
+        [29] = "0b1",                   // == 1
+        [30] = "0b00000001",            // == 1
+        [31] = "0b100000",              // == 32
+        [32] = "0b011101",              // == 29
+        [33] = "0b111001001101010010",  // 234322
+        [34] = "0B111001001101010010"   // 234322
     },
     .num_tokens = (const Token[]) {
         // Decimals
@@ -204,6 +214,48 @@ static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
             .type = TOKEN_TYPE_INT_LIT
         },
         [26] = {
+            .val = (const char*) (intptr_t) 234322,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+
+        // Binary integers
+        [27] = {
+            .val = (const char*) (intptr_t) 0,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [28] = {
+            .val = (const char*) (intptr_t) 0,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [29] = {
+            .val = (const char*) (intptr_t) 1,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [30] = {
+            .val = (const char*) (intptr_t) 1,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [31] = {
+            .val = (const char*) (intptr_t) 32,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [32] = {
+            .val = (const char*) (intptr_t) 29,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [33] = {
+            .val = (const char*) (intptr_t) 234322,
+            .length = 1,
+            .type = TOKEN_TYPE_INT_LIT
+        },
+        [34] = {
             .val = (const char*) (intptr_t) 234322,
             .length = 1,
             .type = TOKEN_TYPE_INT_LIT
