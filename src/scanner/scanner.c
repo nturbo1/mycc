@@ -1,14 +1,12 @@
 #include "scanner.h"
 #include "token.h"
 #include "error.h"
-#include "hashtable.h"
-#include "darray.h"
+#include "numbers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <math.h>
@@ -30,7 +28,7 @@ static void fill_buffer(Scanner* s)
     }
 }
 
-static char next_char(Scanner* s)
+char next_char(Scanner* s)
 {
     const char ch = s->src[s->next];
 
@@ -54,46 +52,26 @@ static char next_char(Scanner* s)
     return ch;
 }
 
-static char peek_next(Scanner* s) {
+char peek_next(Scanner* s) {
     return s->src[s->next];
 }
 
-static bool is_whitespace(char ch)
+bool is_whitespace(char ch)
 {
     return ch == ' ' || ch == '\n' || ch == '\t' || ch == '\v' || ch == '\f' || ch == '\r';
 }
 
-static bool is_alpha(char ch)
+bool is_alpha(char ch)
 {
     return ('A' <= ch && ch <= 'Z') || ('a' <= ch && ch <= 'z');
 }
 
-static bool is_dec_digit(char ch)
-{
-    return '0' <= ch && ch <= '9';
-}
-
-static bool is_hex_digit(char ch)
-{
-    return ('0' <= ch && ch <= '9') || ('a' <= ch && ch <= 'f') || ('A' <= ch && ch <= 'F');
-}
-
-static bool is_bin_digit(char ch)
-{
-    return ch == '0' || ch == '1';
-}
-
-static bool is_oct_digit(char ch)
-{
-    return '0' <= ch && ch <= '7';
-}
-
-static bool is_alnum(char ch)
+bool is_alnum(char ch)
 {
     return is_alpha(ch) || is_dec_digit(ch);
 }
 
-static void skip_whitespace(Scanner* s)
+void skip_whitespace(Scanner* s)
 {
     char ch = peek_next(s);
     while (is_whitespace(ch))
@@ -184,312 +162,6 @@ static const char* scan_char_literal(Scanner* s) {
     return NULL;
 }
 
-typedef enum { BASE_2, BASE_8, BASE_10, BASE_16 } NumBase;
-
-// Converts a char to a digit.
-// Updates the error value pointed by a given err parameter accordingly, if the character is
-// not a digit.
-static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
-{
-    switch (base) {
-    case BASE_10:
-        switch (ch) {
-        case '0':
-            return 0;
-        case '1':
-            return 1;
-        case '2':
-            return 2;
-        case '3':
-            return 3;
-        case '4':
-            return 4;
-        case '5':
-            return 5;
-        case '6':
-            return 6;
-        case '7':
-            return 7;
-        case '8':
-            return 8;
-        case '9':
-            return 9;
-        default:
-            *err_ptr = INVALID_NUMBER;
-            return 0;
-        }
-    case BASE_2:
-        switch (ch) {
-        case '0':
-            return 0;
-        case '1':
-            return 1;
-        default:
-            *err_ptr = INVALID_NUMBER;
-            return 0;
-        }
-    case BASE_8:
-        switch (ch) {
-        case '0':
-            return 0;
-        case '1':
-            return 1;
-        case '2':
-            return 2;
-        case '3':
-            return 3;
-        case '4':
-            return 4;
-        case '5':
-            return 5;
-        case '6':
-            return 6;
-        case '7':
-            return 7;
-        default:
-            *err_ptr = INVALID_NUMBER;
-            return 0;
-        }
-    case BASE_16:
-        switch (ch) {
-        case '0':
-            return 0;
-        case '1':
-            return 1;
-        case '2':
-            return 2;
-        case '3':
-            return 3;
-        case '4':
-            return 4;
-        case '5':
-            return 5;
-        case '6':
-            return 6;
-        case '7':
-            return 7;
-        case '8':
-            return 8;
-        case '9':
-            return 9;
-        case 'a':
-        case 'A':
-            return 10;
-        case 'b':
-        case 'B':
-            return 11;
-        case 'c':
-        case 'C':
-            return 12;
-        case 'd':
-        case 'D':
-            return 13;
-        case 'e':
-        case 'E':
-            return 14;
-        case 'f':
-        case 'F':
-            return 15;
-        default:
-            *err_ptr = INVALID_NUMBER;
-            return 0;
-        }
-        break;
-    default:
-        printf("Unknown number base were passed to char to digit conversion function: %d\n", base);
-        abort();
-    }
-}
-
-// Converts a given char sequence, num_chars, into a number value according to a given base.
-//
-// The num_chars is expected to be of type DArray<char> meaning it directly stores the char values
-// as (void*) in the array buffer. So, the elements should be properly reverted back to char type
-// when accessed from the array.
-//
-// Updates the error value pointed by a given err parameter, if the char sequence contains an
-// invalid or non-digit character.
-static long int txt_to_num(DArray* num_chars, NumBase base, Error* err_ptr)
-{
-    assert(num_chars != NULL);
-    long int radix = 10;
-    switch (base) {
-    case BASE_10:
-        break;
-    case BASE_2:
-        radix = 2;
-        break;
-    case BASE_8:
-        radix = 8;
-        break;
-    case BASE_16:
-        radix = 16;
-        break;
-    default:
-        printf("Unknown number base were passed to char sequence to number conversion function: %d\n", base);
-        abort();
-    }
-
-    long int number = 0;
-    size_t num_chars_len = num_chars->length;
-
-    for (size_t i = 0; i < num_chars_len; ++i)
-    {
-        char ch = * (char*) darray_get_at(num_chars, num_chars_len - 1 - i);
-
-        *err_ptr = NO_ERROR;
-        long int digit = char_to_dig(err_ptr, ch, base);
-        if (*err_ptr != NO_ERROR) {
-            return 0;
-        }
-
-        number += ((long int) pow(radix, i) * digit);
-    }
-
-    return number;
-}
-
-typedef struct {
-    const long int val;
-    TokenType type;
-} NumberScan;
-
-// Scans an integer literal in a given base.
-// If there's a lexical error, it sets the scanner error, s->err, to an appropriate error type and
-// returns.
-// The `is_digit` parameter is a function that determines if a character represents a valid digit
-// in the given base.
-static NumberScan scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
-{
-    s->err = NO_ERROR;
-    char ch = peek_next(s);
-    NumberScan ns0 = {0, 0}; // value doesn't matter, returned in case of an error
-
-    if (ch == EOF) {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-    if (!is_digit(ch)) {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-
-    DArray* num_chars = init_darray(NULL, 16, 1);
-    assert(num_chars != NULL);
-    ch = next_char(s);
-    darray_add(num_chars, &ch, 1);
-    ch = peek_next(s);
-
-    while (is_digit(ch))
-    {
-        ch = next_char(s);
-        darray_add(num_chars, (void*) &ch, 1);
-        ch = peek_next(s);
-    }
-
-    switch (ch) {
-    case ';':
-    case ')':
-    case ']':
-    case '}':; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
-            // [-Werror=free-labels]
-        NumberScan ns = {
-            .val = txt_to_num(num_chars, base, &s->err),
-            .type = TOKEN_TYPE_INT_LIT
-        };
-        return ns;
-    default:
-        if (is_whitespace(ch)) {
-            NumberScan ns1 = {
-                .val = txt_to_num(num_chars, base, &s->err),
-                .type = TOKEN_TYPE_INT_LIT
-            };
-            return ns1;
-        }
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-}
-
-static NumberScan scan_hex(Scanner* s)
-{
-    return scan_number_lit(s, BASE_16, is_hex_digit);
-}
-
-static NumberScan scan_bin(Scanner* s)
-{
-    return scan_number_lit(s, BASE_2, is_bin_digit);
-}
-
-static NumberScan scan_oct(Scanner* s)
-{
-    return scan_number_lit(s, BASE_8, is_oct_digit);
-}
-
-static NumberScan scan_dec(Scanner* s)
-{
-    return scan_number_lit(s, BASE_10, is_dec_digit);
-}
-
-static NumberScan scan_float(Scanner* s)
-{
-    // TODO: IMPLEMENT!!! The below is garbage
-    NumberScan ns = {s->ln_offset + 1, 0};
-    return ns;
-}
-
-// Scans for a number (decimal, hex, binary, octal).
-// Sets the scanner error (s->err) to an appropriate error value, if there is a lexical error.
-static NumberScan scan_number(Scanner* s) {
-    char ch = peek_next(s);
-
-    NumberScan ns0 = {0, 0}; // value doesn't matter here, returned in case of an error
-    if (ch == EOF)
-    {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-    else if (ch == '0')
-    {
-        next_char(s); // skip the 0
-        ch = peek_next(s);
-        switch (ch) {
-        case ';':
-        case ')':
-        case ']':
-        case '}': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
-                // [-Werror=free-labels]
-            NumberScan ns = {0, TOKEN_TYPE_INT_LIT};
-            return ns;
-        case 'x':
-        case 'X':
-            next_char(s); // skip 'x' or 'X'
-            return scan_hex(s);
-        case 'b':
-        case 'B':
-            next_char(s); // skip 'b' or 'B'
-            return scan_bin(s);
-        case '.':
-            return scan_float(s);
-        default:
-            if (is_whitespace(ch)) {
-                NumberScan ns1 = { 0, TOKEN_TYPE_INT_LIT };
-                return ns1;
-            }
-            return scan_oct(s);
-        }
-    }
-    else if (is_dec_digit(ch))
-    {
-        return scan_dec(s);
-    }
-    else
-    {
-        s->err = INVALID_NUMBER;
-        return ns0;
-    }
-}
-
 // Scans a line (// ...) or mult-line (/* ... */) comment and ignores them.
 static void scan_comment(Scanner* s, bool is_multiline) {
     printf("IMPLEMENT COMMENT SCANNER!!! scanner = %p, is_multiline = %d\n", (void*) s, is_multiline);
@@ -519,18 +191,12 @@ scan_again:
     {
         s->err = NO_ERROR;
 
-        NumberScan number = scan_number(s);
+        Number* number = scan_number(s);
         if (s->err != NO_ERROR) {
             return NULL;
         }
 
-        return new_token(
-            (char*)(intptr_t) number.val,
-            1,
-            tok_line,
-            tok_col,
-            number.type
-        );
+        return new_token(NULL, 0, tok_line, tok_col, number->type, number);
     }
     else
     {
@@ -543,7 +209,8 @@ scan_again:
                     strlen(pp_directive),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_PREPROCESSOR_DIRECTIVE
+                    TOKEN_TYPE_PREPROCESSOR_DIRECTIVE,
+                    NULL
                 );
             case '"': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
                 // [-Werror=free-labels]
@@ -553,7 +220,8 @@ scan_again:
                     strlen(str_literal),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_STRING_LIT
+                    TOKEN_TYPE_STRING_LIT,
+                    NULL
                 );
             case '\'': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
                 // [-Werror=free-labels]
@@ -563,7 +231,8 @@ scan_again:
                     strlen(char_literal),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_CHAR_LIT
+                    TOKEN_TYPE_CHAR_LIT,
+                    NULL
                 );
             case '(':
                 next_char(s);
@@ -572,7 +241,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_LPAREN]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_LPAREN
+                    TOKEN_TYPE_LPAREN,
+                    NULL
                 );
             case '[':
                 next_char(s);
@@ -581,7 +251,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_LBRACK]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_LBRACK
+                    TOKEN_TYPE_LBRACK,
+                    NULL
                 );
             case '{':
                 next_char(s);
@@ -590,7 +261,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_LBRACE]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_LBRACE
+                    TOKEN_TYPE_LBRACE,
+                    NULL
                 );
             case ')':
                 next_char(s);
@@ -599,7 +271,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_RPAREN]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_RPAREN
+                    TOKEN_TYPE_RPAREN,
+                    NULL
                 );
             case ']':
                 next_char(s);
@@ -608,7 +281,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_RBRACK]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_RBRACK
+                    TOKEN_TYPE_RBRACK,
+                    NULL
                 );
             case '}':
                 next_char(s);
@@ -617,7 +291,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_RBRACE]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_RBRACE
+                    TOKEN_TYPE_RBRACE,
+                    NULL
                 );
             case ',':
                 next_char(s);
@@ -626,7 +301,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_COMMA]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_COMMA
+                    TOKEN_TYPE_COMMA,
+                    NULL
                 );
             case '.':
                 next_char(s);
@@ -641,7 +317,8 @@ scan_again:
                             strlen(token_type_name[TOKEN_TYPE_ELLIPSIS]),
                             tok_line,
                             tok_col,
-                            TOKEN_TYPE_ELLIPSIS
+                            TOKEN_TYPE_ELLIPSIS,
+                            NULL
                         );
                     }
                     else
@@ -657,7 +334,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_PERIOD]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_PERIOD
+                        TOKEN_TYPE_PERIOD,
+                        NULL
                     );
                 }
             case ':':
@@ -667,7 +345,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_COLON]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_COLON
+                    TOKEN_TYPE_COLON,
+                    NULL
                 );
             case ';':
                 next_char(s);
@@ -676,7 +355,8 @@ scan_again:
                     strlen(token_type_name[TOKEN_TYPE_SEMICOLON]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_SEMICOLON
+                    TOKEN_TYPE_SEMICOLON,
+                    NULL
                 );
             case '+':
                 next_char(s);
@@ -689,7 +369,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_INC]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_INC
+                        TOKEN_TYPE_INC,
+                        NULL
                     );
                 }
                 else if (ch == '=')
@@ -700,7 +381,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_ADD_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_ADD_ASSIGN
+                        TOKEN_TYPE_ADD_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -710,7 +392,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_ADD]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_ADD
+                        TOKEN_TYPE_ADD,
+                        NULL
                     );
                 }
             case '-':
@@ -724,7 +407,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_DEC]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_DEC
+                        TOKEN_TYPE_DEC,
+                        NULL
                     );
                 }
                 else if (ch == '>')
@@ -735,7 +419,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_RARROW]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_RARROW
+                        TOKEN_TYPE_RARROW,
+                        NULL
                     );
                 }
                 else if (ch == '=')
@@ -746,7 +431,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_SUB_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_SUB_ASSIGN
+                        TOKEN_TYPE_SUB_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -756,7 +442,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_SUB]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_SUB
+                        TOKEN_TYPE_SUB,
+                        NULL
                     );
                 }
             case '*':
@@ -769,7 +456,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_MUL_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_MUL_ASSIGN
+                        TOKEN_TYPE_MUL_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -779,7 +467,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_MUL]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_MUL
+                        TOKEN_TYPE_MUL,
+                        NULL
                     );
                 }
             case '/':
@@ -799,7 +488,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_QUO_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_QUO_ASSIGN
+                        TOKEN_TYPE_QUO_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -809,7 +499,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_QUO]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_QUO
+                        TOKEN_TYPE_QUO,
+                        NULL
                     );
                 }
             case '%':
@@ -822,7 +513,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_REM_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_REM_ASSIGN
+                        TOKEN_TYPE_REM_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -832,7 +524,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_REM]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_REM
+                        TOKEN_TYPE_REM,
+                        NULL
                     );
                 }
             case '&':
@@ -846,7 +539,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_LAND]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_LAND
+                        TOKEN_TYPE_LAND,
+                        NULL
                     );
                 }
                 else if (ch == '^')
@@ -860,7 +554,8 @@ scan_again:
                             strlen(token_type_name[TOKEN_TYPE_AND_NOT_ASSIGN]),
                             tok_line,
                             tok_col,
-                            TOKEN_TYPE_AND_NOT_ASSIGN
+                            TOKEN_TYPE_AND_NOT_ASSIGN,
+                            NULL
                         );
                     }
                     else
@@ -870,7 +565,8 @@ scan_again:
                             strlen(token_type_name[TOKEN_TYPE_AND_NOT]),
                             tok_line,
                             tok_col,
-                            TOKEN_TYPE_AND_NOT
+                            TOKEN_TYPE_AND_NOT,
+                            NULL
                         );
                     }
                 }
@@ -882,7 +578,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_AND_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_AND_ASSIGN
+                        TOKEN_TYPE_AND_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -892,7 +589,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_AND]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_AND
+                        TOKEN_TYPE_AND,
+                        NULL
                     );
                 }
             case '|':
@@ -906,7 +604,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_LOR]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_LOR
+                        TOKEN_TYPE_LOR,
+                        NULL
                     );
                 }
                 else if (ch == '=')
@@ -917,7 +616,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_OR_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_OR_ASSIGN
+                        TOKEN_TYPE_OR_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -927,7 +627,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_OR]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_OR
+                        TOKEN_TYPE_OR,
+                        NULL
                     );
                 }
             case '^':
@@ -940,7 +641,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_XOR_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_XOR_ASSIGN
+                        TOKEN_TYPE_XOR_ASSIGN,
+                        NULL
                     );
                 }
                 else
@@ -950,7 +652,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_XOR]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_XOR
+                        TOKEN_TYPE_XOR,
+                        NULL
                     );
                 }
             case '<':
@@ -964,7 +667,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_LEQ]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_LEQ
+                        TOKEN_TYPE_LEQ,
+                        NULL
                     );
                 }
                 else if (ch == '<')
@@ -978,7 +682,8 @@ scan_again:
                             strlen(token_type_name[TOKEN_TYPE_SHL_ASSIGN]),
                             tok_line,
                             tok_col,
-                            TOKEN_TYPE_SHL_ASSIGN
+                            TOKEN_TYPE_SHL_ASSIGN,
+                            NULL
                         );
                     }
                     else
@@ -988,7 +693,8 @@ scan_again:
                             strlen(token_type_name[TOKEN_TYPE_SHL]),
                             tok_line,
                             tok_col,
-                            TOKEN_TYPE_SHL
+                            TOKEN_TYPE_SHL,
+                            NULL
                         );
                     }
                 }
@@ -999,7 +705,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_LSS]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_LSS
+                        TOKEN_TYPE_LSS,
+                        NULL
                     );
                 }
             case '>':
@@ -1013,7 +720,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_GEQ]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_GEQ
+                        TOKEN_TYPE_GEQ,
+                        NULL
                     );
                 }
                 else if (ch == '>')
@@ -1027,7 +735,8 @@ scan_again:
                             strlen(token_type_name[TOKEN_TYPE_SHR_ASSIGN]),
                             tok_line,
                             tok_col,
-                            TOKEN_TYPE_SHR_ASSIGN
+                            TOKEN_TYPE_SHR_ASSIGN,
+                            NULL
                         );
                     }
                     else
@@ -1037,7 +746,8 @@ scan_again:
                             strlen(token_type_name[TOKEN_TYPE_SHR]),
                             tok_line,
                             tok_col,
-                            TOKEN_TYPE_SHR
+                            TOKEN_TYPE_SHR,
+                            NULL
                         );
                     }
                 }
@@ -1048,7 +758,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_GTR]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_GTR
+                        TOKEN_TYPE_GTR,
+                        NULL
                     );
                 }
             case '=':
@@ -1061,7 +772,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_EQL]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_EQL
+                        TOKEN_TYPE_EQL,
+                        NULL
                     );
                 }
                 else
@@ -1071,7 +783,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_ASSIGN]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_ASSIGN
+                        TOKEN_TYPE_ASSIGN,
+                        NULL
                     );
                 }
             case '!':
@@ -1084,7 +797,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_NEQ]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_NEQ
+                        TOKEN_TYPE_NEQ,
+                        NULL
                     );
                 }
                 else
@@ -1094,7 +808,8 @@ scan_again:
                         strlen(token_type_name[TOKEN_TYPE_NOT]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_NOT
+                        TOKEN_TYPE_NOT,
+                        NULL
                     );
                 }
 
@@ -1112,7 +827,8 @@ scan_again:
                             idf_len,
                             tok_line,
                             tok_col,
-                            tt
+                            tt,
+                            NULL
                         );
                     }
                 }
@@ -1122,7 +838,8 @@ scan_again:
                     idf_len,
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_IDENT
+                    TOKEN_TYPE_IDENT,
+                    NULL
                 );
         }
     }

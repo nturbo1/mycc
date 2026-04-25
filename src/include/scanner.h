@@ -1,5 +1,5 @@
-#ifndef SRC_SCANNER_H
-#define SRC_SCANNER_H
+#ifndef SRC_INCLUDE_SCANNER_H
+#define SRC_INCLUDE_SCANNER_H
 
 #include "token.h"
 #include "error.h"
@@ -39,4 +39,12 @@ Token* next_tok(Scanner* s);
 // It will exit in case of any IO or memory error.
 Scanner* init_scanner(Scanner* s, const char* filepath);
 
-#endif // SRC_SCANNER_H
+char next_char(Scanner* s);
+char peek_next(Scanner* s);
+char peek_next(Scanner* s);
+bool is_whitespace(char ch);
+bool is_alpha(char ch);
+bool is_alnum(char ch);
+void skip_whitespace(Scanner* s);
+
+#endif // SRC_INCLUDE_SCANNER_H

@@ -1,5 +1,5 @@
-#ifndef SRC_TOKEN_H
-#define SRC_TOKEN_H
+#ifndef SRC_INCLUDE_TOKEN_H
+#define SRC_INCLUDE_TOKEN_H
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -162,20 +162,40 @@ typedef enum {
     // [TOKEN_TYPE_] = "nullptr",              // (C23)
 } TokenType;
 
+typedef struct {
+    const long int integral;
+    const double fractional;
+    const long int exponent;
+    const TokenType type;
+} Number;
+
+Number* new_number(
+        const long int integral,
+        const double fractional,
+        const long int exponent,
+        const TokenType type);
+
 #define TOKEN_TYPES_NUM (TOKEN_TYPE_end - TOKEN_TYPE_beg + 1)
 
 typedef struct {
-    const char* val; // Stores a pointer to a string if the value is text and the actual integer/float value if the value is a number.
-    const size_t length; // Length of the string if the value is a pointer to a string.
-    const size_t line;
-    const size_t col;
+    const char* txt;        // The string value of the token of any type but numbers, `txt` will be NULL for numbers
+    const size_t length;    // The length of `txt`
+    const Number* number;   // Contains information about the number value of the token if the token of type a number
+    const size_t line;      // The source line that the token starts
+    const size_t col;       // The source column that the token starts
     const TokenType type;
 } Token;
 
-Token* new_token(const char* val, const size_t length, const size_t line, const size_t col, const TokenType type);
+Token* new_token(
+        const char* val,
+        const size_t length,
+        const size_t line,
+        const size_t col,
+        const TokenType type,
+        const Number* number);
 
 bool is_keyword(Token* tok);
 bool is_operator(Token* tok);
 bool is_literal(Token* tok);
 
-#endif
+#endif // SRC_INCLUDE_TOKEN_H

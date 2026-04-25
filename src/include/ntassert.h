@@ -1,5 +1,5 @@
-#ifndef SRC_NTASSERT_H
-#define SRC_NTASSERT_H
+#ifndef SRC_INCLUDE_NTASSERT_H
+#define SRC_INCLUDE_NTASSERT_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,4 +12,4 @@
         }\
     } while(0)
 
-#endif // SRC_NTASSERT_H
+#endif // SRC_INCLUDE_NTASSERT_H

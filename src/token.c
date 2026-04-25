@@ -2,16 +2,38 @@
 
 #include <stdlib.h>
 
-Token* new_token(const char* val, const size_t length, const size_t line, const size_t col, const TokenType type)
+Token* new_token(
+        const char* txt,
+        const size_t length,
+        const size_t line,
+        const size_t col,
+        const TokenType type,
+        const Number* number)
 {
     Token* tok = malloc(sizeof(Token));
-    *(char **)&tok->val = (char*) val;
+    tok->txt = txt;
     *(size_t *)&tok->length = length;
     *(size_t *)&tok->line = line;
     *(size_t *)&tok->col = col;
     *(TokenType *)&tok->type = type;
+    tok->number = number;
 
     return tok;
+}
+
+Number* new_number(
+        const long int integral,
+        const double fractional,
+        const long int exponent,
+        const TokenType type)
+{
+    Number* res = (Number*) malloc(sizeof(Number));
+    *(long int*)&res->integral = integral;
+    *(double*)&res->fractional = fractional;
+    *(long int*)&res->exponent = exponent;
+    *(TokenType*)&res->type = type;
+
+    return res;
 }
 
 bool is_keyword(Token* tok) {

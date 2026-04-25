@@ -7,7 +7,6 @@ include(cmake/configs.cmake)
 add_executable(mycc src/main.c)
 
 add_subdirectory(test)
-
 add_subdirectory(src)
 
 target_link_libraries(mycc
