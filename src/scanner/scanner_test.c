@@ -56,10 +56,150 @@ const Number numbers[] = {
     [17] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
     [18] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
     [19] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+
+    [21] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [22] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [23] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [24] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [25] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [26] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [27] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [28] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [29] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [30] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [31] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [32] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [33] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [34] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [35] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [36] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [37] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [38] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [39] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [40] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [41] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [42] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [43] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [44] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [45] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [46] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [47] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [48] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [49] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [50] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [51] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [52] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [53] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [54] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [55] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [56] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [57] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [58] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [59] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [60] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [61] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [62] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [63] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [64] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [65] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [66] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [67] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [68] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [69] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [70] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [71] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [72] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [73] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [74] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [75] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [76] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [77] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [78] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [79] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [80] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [81] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [82] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [83] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [84] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [85] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [86] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [87] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [88] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [89] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [90] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [91] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [92] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [93] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [94] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [95] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [96] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [97] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [98] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [99] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [100] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [101] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [102] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [103] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [104] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [105] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [106] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [107] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [108] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [109] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [110] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [111] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [112] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [113] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [114] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [115] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [116] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [117] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [118] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [119] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [120] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [121] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [122] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [123] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [124] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [125] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [126] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [127] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [128] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [129] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [130] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [131] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [132] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [133] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [134] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
+
+    [135] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, L_SUFF },
+    [136] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, LL_SUFF },
+    [137] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, U_SUFF },
+    [138] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, UL_SUFF },
+    [139] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, ULL_SUFF },
+    [140] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, F_SUFF },
 };
 
 static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
-    .size = 45,
+    .size = 117,
     .nums_txt = (const char *const[]) {
         // Decimals
         [0] = "0",
@@ -113,6 +253,86 @@ static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
         [42] = "07",        // == 7
         [43] = "0711522",    // == 234322
         [44] = "042536033",  // == 9092123
+
+        // Decimals with suffixes
+        [45] = "0L",
+        [46] = "1L",
+        [47] = "2L",
+        [48] = "3L",
+        [49] = "4L",
+        [50] = "5l",
+        [51] = "6L",
+        [52] = "7l",
+        [53] = "8l",
+        [54] = "9l",
+        [55] = "10L",
+        [56] = "69l",
+        [57] = "234322ll",
+        [58] = "234322Ll",
+        [59] = "234322lL",
+        [60] = "9092123LL",
+        [61] = "9092123LLU",
+        [62] = "9092123llU",
+        [63] = "9092123LlU",
+        [64] = "9092123lLU",
+        [65] = "9092123ulL",
+        [66] = "9092123ULL",
+        [67] = "9092123uLL",
+        [68] = "9092123u",
+        [69] = "9092123U",
+        [70] = "9092123Ul",
+        [71] = "9092123uL",
+        [72] = "9092123UL",
+
+        // Hexadecimals with suffixes
+        [73] = "0x12l",      // == 18
+        [74] = "0x325L",     // == 805
+        [75] = "0xff95u",    // == 65429
+        [76] = "0xFF95U",    // == 65429
+        [77] = "0x0ll",       // == 0
+        [78] = "0x1lL",       // == 1
+        [79] = "0x2Ll",       // == 2
+        [80] = "0x9LL",       // == 9
+        [81] = "0xacdeful",   // == 708079
+        [82] = "0xaCdEFuL",   // == 708079
+        [83] = "0x8ABC1Bull",   // == 9092123
+        [84] = "0x8abC1BuLL",   // == 9092123
+        [85] = "0x39352ULL",   // == 234322
+        [86] = "0x39352LLU",   // == 234322
+        [87] = "0x39352llu",   // == 234322
+        [88] = "0x39352lLu",   // == 234322
+
+        // Binary integers with suffixes
+        [89] = "0b0L",                   // == 0
+        [90] = "0b00000l",               // == 0
+        [91] = "0b1LL",                   // == 1
+        [92] = "0b00000001ll",            // == 1
+        [93] = "0b100000lL",              // == 32
+        [94] = "0b011101u",              // == 29
+        [95] = "0b111001001101010010U",  // 234322
+        [96] = "0B111001001101010010ul",  // 234322
+        [97] = "0B111001001101010010Ul",  // 234322
+        [98] = "0B111001001101010010UL",  // 234322
+        [99] = "0B111001001101010010ULL",  // 234322
+        [100] = "0B111001001101010010uLl",  // 234322
+        [101] = "0B111001001101010010LLU",  // 234322
+        [102] = "0B111001001101010010lLU",  // 234322
+
+        // Octadecimal with suffixes
+        [103] = "00l",        // == 0
+        [104] = "01L",        // == 1
+        [105] = "02u",        // == 2
+        [106] = "03U",        // == 3
+        [107] = "04ll",        // == 4
+        [108] = "05LL",        // == 5
+        [109] = "06lL",        // == 6
+        [110] = "07ul",        // == 7
+        [111] = "0711522uL",    // == 234322
+        [112] = "042536033ulL",  // == 9092123
+        [113] = "042536033llu",  // == 9092123
+        [114] = "042536033Llu",  // == 9092123
+        [115] = "042536033LLU",  // == 9092123
+        [116] = "042536033ULL",  // == 9092123
     },
     .num_tokens = (const Token[]) {
         // Decimals
@@ -167,6 +387,86 @@ static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
         [42] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[7] },
         [43] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[12] },
         [44] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[13] },
+
+        // Decimals with suffixes
+        [45] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[21] },
+        [46] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[27] },
+        [47] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[33] },
+        [48] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[39] },
+        [49] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[45] },
+        [50] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[51] },
+        [51] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[57] },
+        [52] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[63] },
+        [53] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[69] },
+        [54] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[75] },
+        [55] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[81] },
+        [56] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[87] },
+        [57] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[94] },
+        [58] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[94] },
+        [59] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[94] },
+        [60] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[100] },
+        [61] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [62] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [63] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [64] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [65] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [66] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [67] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [68] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[101] },
+        [69] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[101] },
+        [70] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[102] },
+        [71] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[102] },
+        [72] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[102] },
+
+        // Hexadecimals with suffixes
+        [73] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[105] },
+        [74] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[111] },
+        [75] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[119] },
+        [76] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[119] },
+        [77] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[22] },
+        [78] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[28] },
+        [79] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[34] },
+        [80] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[76] },
+        [81] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[126] },
+        [82] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[126] },
+        [83] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [84] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [85] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+        [86] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+        [87] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+        [88] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+
+        // Binary integers with suffixes
+        [89] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[21] },
+        [90] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[21] },
+        [91] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[28] },
+        [92] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[28] },
+        [93] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[130] },
+        [94] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[137] },
+        [95] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[95] },
+        [96] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[96] },
+        [97] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[96] },
+        [98] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[96] },
+        [99] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+        [100] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+        [101] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+        [102] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[97] },
+
+        // Octadecimal with suffixes
+        [103] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[21] },
+        [104] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[27] },
+        [105] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[35] },
+        [106] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[41] },
+        [107] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[46] },
+        [108] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[52] },
+        [109] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[58] },
+        [110] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[66] },
+        [111] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[96] },
+        [112] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [113] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [114] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [115] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
+        [116] = { .type = TOKEN_TYPE_INT_LIT, .number = &numbers[103] },
     }
 };
 
