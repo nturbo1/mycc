@@ -162,18 +162,24 @@ typedef enum {
     // [TOKEN_TYPE_] = "nullptr",              // (C23)
 } TokenType;
 
+typedef enum {
+    NO_SUFF, U_SUFF, L_SUFF, LL_SUFF, UL_SUFF, ULL_SUFF, F_SUFF
+} NumberSuffix;
+
 typedef struct {
     const long int integral;
     const double fractional;
     const long int exponent;
     const TokenType type;
+    const NumberSuffix suff;
 } Number;
 
 Number* new_number(
         const long int integral,
         const double fractional,
         const long int exponent,
-        const TokenType type);
+        const TokenType type,
+        const NumberSuffix suff);
 
 #define TOKEN_TYPES_NUM (TOKEN_TYPE_end - TOKEN_TYPE_beg + 1)
 

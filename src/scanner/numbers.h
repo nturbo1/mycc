@@ -41,6 +41,9 @@ Number* scan_float(Scanner* s);
 //  . decimal-exponent (optional) suffix (optional)
 //          digit-sequence representing a whole number with a decimal separator,
 //          in this case the exponent is optional: ., .e-2., .14, .1f, .1e-1L
+//
+// In case of a lexical error, it sets the scanner error, `s->err`, to an appropriate error type and
+// returns `NULL`;
 Number* scan_fraction(Scanner* s);
 
 bool is_dec_digit(char ch);

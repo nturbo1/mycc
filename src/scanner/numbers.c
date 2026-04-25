@@ -25,6 +25,45 @@ static long int char_to_dig(Error* err_ptr, char ch, NumBase base);
 // invalid or non-digit character.
 static long int txt_to_num(DArray* num_chars, NumBase base, Error* err_ptr);
 
+static NumberSuffix scan_number_suff(Scanner* s);
+
+// Checks whether given number token type, `number_type`, and suffix, `suff`, are compatible. Returns
+// false if not.
+// In case of incompatibility, it sets the scanner error, `s->err`, to an appropriate error type and
+// returns false.
+static bool is_suff_and_number_compatible(Scanner* s, TokenType number_type, NumberSuffix suff)
+{
+    assert(number_type == TOKEN_TYPE_INT_LIT ||
+           number_type == TOKEN_TYPE_FLOAT_LIT ||
+           "Non int and float token type was passed.");
+
+    switch(suff) {
+        case NO_SUFF:
+        case L_SUFF:
+            return true;
+        case LL_SUFF:
+        case U_SUFF:
+        case UL_SUFF:
+        case ULL_SUFF:
+            if (number_type == TOKEN_TYPE_INT_LIT) {
+                return true;
+            } else {
+                s->err = INCOMPATIBLE_NUMBER_SUFFIX;
+                return false;
+            }
+        case F_SUFF:
+            if (number_type == TOKEN_TYPE_FLOAT_LIT) {
+                return true;
+            } else {
+                s->err = INCOMPATIBLE_NUMBER_SUFFIX;
+                return false;
+            }
+        default:
+            printf("Unknown number suffix enum value: %d\n", suff);
+            abort();
+    }
+}
+
 Number* scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
 {
     s->err = NO_ERROR;
@@ -45,6 +84,8 @@ Number* scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
     darray_add(num_chars, &ch, 1);
     ch = peek_next(s);
 
+    NumberSuffix suff = NO_SUFF;
+
     while (is_digit(ch))
     {
         ch = next_char(s);
@@ -57,7 +98,18 @@ Number* scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
     case ')':
     case ']':
     case '}':
-        return new_number(txt_to_num(num_chars, base, &s->err), 0.0, 0, TOKEN_TYPE_INT_LIT);
+        return new_number(txt_to_num(num_chars, base, &s->err), 0.0, 0, TOKEN_TYPE_INT_LIT, suff);
+    case 'u':
+    case 'U':
+    case 'l':
+    case 'L':
+    case 'f':
+    case 'F':
+        suff = scan_number_suff(s);
+        if (is_suff_and_number_compatible(s, TOKEN_TYPE_INT_LIT, suff))
+            return new_number(txt_to_num(num_chars, base, &s->err), 0.0, 0, TOKEN_TYPE_INT_LIT, suff);
+        else
+            return NULL;
     case '.':; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
                 // [-Werror=free-labels]
         // TODO: Better evaluate the char sequence to a number as it's being scanned instead of storing
@@ -65,11 +117,15 @@ Number* scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
         //       it twice.
         long int integral = txt_to_num(num_chars, base, &s->err);
         Number* number = scan_fraction(s);
+
+        if (number == NULL)
+            return NULL;
+
         *(long int*)&number->integral = integral;
         return number;
     default:
         if (is_whitespace(ch)) {
-            return new_number(txt_to_num(num_chars, base, &s->err), 0.0, 0, TOKEN_TYPE_INT_LIT);
+            return new_number(txt_to_num(num_chars, base, &s->err), 0.0, 0, TOKEN_TYPE_INT_LIT, suff);
         }
         s->err = INVALID_NUMBER;
         return NULL;
@@ -85,6 +141,7 @@ Number* scan_fraction(Scanner* s)
 Number* scan_number(Scanner* s)
 {
     char ch = peek_next(s);
+    NumberSuffix suff = NO_SUFF;
 
     if (ch == EOF)
     {
@@ -101,7 +158,18 @@ Number* scan_number(Scanner* s)
         case ']':
         case '}': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
                 // [-Werror=free-labels]
-            return new_number(0, 0.0, 0, TOKEN_TYPE_INT_LIT);
+            return new_number(0, 0.0, 0, TOKEN_TYPE_INT_LIT, suff);
+        case 'u':
+        case 'U':
+        case 'l':
+        case 'L':
+        case 'f':
+        case 'F':
+            suff = scan_number_suff(s);
+            if (is_suff_and_number_compatible(s, TOKEN_TYPE_INT_LIT, suff))
+                return new_number(0, 0.0, 0, TOKEN_TYPE_INT_LIT, suff);
+            else
+                return NULL;
         case 'x':
         case 'X':
             next_char(s); // skip 'x' or 'X'
@@ -114,7 +182,7 @@ Number* scan_number(Scanner* s)
             return scan_fraction(s);
         default:
             if (is_whitespace(ch)) {
-                return new_number(0, 0.0, 0, TOKEN_TYPE_INT_LIT);
+                return new_number(0, 0.0, 0, TOKEN_TYPE_INT_LIT, suff);
             }
             return scan_number_lit(s, BASE_8, is_hex_digit);
         }
@@ -148,6 +216,63 @@ bool is_bin_digit(char ch)
 bool is_oct_digit(char ch)
 {
     return '0' <= ch && ch <= '7';
+}
+
+static NumberSuffix scan_number_suff(Scanner* s)
+{
+    char ch = peek_next(s);
+    switch(ch) {
+    case 'l':
+    case 'L':
+        next_char(s);
+        ch = peek_next(s);
+        switch(ch) {
+        case 'l':
+        case 'L':
+            next_char(s);
+            ch = peek_next(s);
+            switch(ch) {
+            case 'u':
+            case 'U':
+                next_char(s);
+                return ULL_SUFF;
+            default:
+                return LL_SUFF;
+            }
+        case 'u':
+        case 'U':
+            next_char(s);
+            return UL_SUFF;
+        default:
+            return L_SUFF;
+        }
+    case 'u':
+    case 'U':
+        next_char(s);
+        ch = peek_next(s);
+        switch(ch) {
+        case 'l':
+        case 'L':
+            next_char(s);
+            ch = peek_next(s);
+            switch(ch) {
+            case 'l':
+            case 'L':
+                next_char(s);
+                return ULL_SUFF;
+            default:
+                return UL_SUFF;
+            }
+        default:
+            return U_SUFF;
+        }
+    case 'f':
+    case 'F':
+        next_char(s);
+        return F_SUFF;
+    default:
+        return NO_SUFF;
+    }
 }
 
 static long int char_to_dig(Error* err_ptr, char ch, NumBase base)

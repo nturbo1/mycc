@@ -7,7 +7,8 @@ typedef enum {
     NO_ERROR,
     INVALID_IDENTIFIER_NAME,
     INVALID_NUMBER,
-    INVALID_TOKEN
+    INVALID_TOKEN,
+    INCOMPATIBLE_NUMBER_SUFFIX,
 } Error;
 
 const char* err_name(Error err);

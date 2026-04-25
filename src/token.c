@@ -25,15 +25,17 @@ Number* new_number(
         const long int integral,
         const double fractional,
         const long int exponent,
-        const TokenType type)
+        const TokenType type,
+        const NumberSuffix suff)
 {
-    Number* res = (Number*) malloc(sizeof(Number));
-    *(long int*)&res->integral = integral;
-    *(double*)&res->fractional = fractional;
-    *(long int*)&res->exponent = exponent;
-    *(TokenType*)&res->type = type;
+    Number* num = (Number*) malloc(sizeof(Number));
+    *(long int*)&num->integral = integral;
+    *(double*)&num->fractional = fractional;
+    *(long int*)&num->exponent = exponent;
+    *(TokenType*)&num->type = type;
+    *(NumberSuffix*)&num->suff = suff;
 
-    return res;
+    return num;
 }
 
 bool is_keyword(Token* tok) {

@@ -8,14 +8,16 @@ static const char* err_names[] = {
     [NO_ERROR] = "",
     [INVALID_IDENTIFIER_NAME] = "Invalid identifer name",
     [INVALID_NUMBER] = "Invalid number",
-    [INVALID_TOKEN] = "Invalid token"
+    [INVALID_TOKEN] = "Invalid token",
+    [INCOMPATIBLE_NUMBER_SUFFIX] = "Incompatible number suffix",
 };
 
 static const char* err_msg[] = {
     [NO_ERROR] = "",
     [INVALID_IDENTIFIER_NAME] = "Invalid identifer name",
     [INVALID_NUMBER] = "Invalid number",
-    [INVALID_TOKEN] = "Invalid token"
+    [INVALID_TOKEN] = "Invalid token",
+    [INCOMPATIBLE_NUMBER_SUFFIX] = "Incompatible number suffix",
 };
 
 const char* err_name(Error err)

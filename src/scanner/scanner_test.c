@@ -36,26 +36,26 @@ typedef struct {
 } ScanNumberLiteralsTestData;
 
 const Number numbers[] = {
-    [0] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [1] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [2] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [3] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [4] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [5] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [6] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [7] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [8] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [9] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [10] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [11] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [12] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [13] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [14] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [15] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [16] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [17] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [18] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT },
-    [19] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT },
+    [0] = { 0, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [1] = { 1, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [2] = { 2, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [3] = { 3, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [4] = { 4, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [5] = { 5, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [6] = { 6, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [7] = { 7, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [8] = { 8, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [9] = { 9, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [10] = { 10, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [11] = { 69, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [12] = { 234322, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [13] = { 9092123, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [14] = { 18, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [15] = { 805, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [16] = { 65429, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [17] = { 708079, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [18] = { 32, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
+    [19] = { 29, 0.0, 0, TOKEN_TYPE_INT_LIT, NO_SUFF },
 };
 
 static const ScanNumberLiteralsTestData scan_number_literals_test_data = {
@@ -201,6 +201,7 @@ TEST(scan_number_literals,
         ASSERT_TRUE(exp_t.number->fractional == t->number->fractional);
         ASSERT_TRUE(exp_t.number->exponent == t->number->exponent);
         ASSERT_TRUE(exp_t.number->type == t->number->type);
+        ASSERT_TRUE(exp_t.number->suff == t->number->suff);
     }
 
     // Clean up
