@@ -115,6 +115,14 @@ typedef enum {
 	TOKEN_TYPE_SIZEOF,
 	TOKEN_TYPE_TYPEDEF,
 	TOKEN_TYPE_VOLATILE,
+    TOKEN_TYPE_AUTO, 
+    TOKEN_TYPE_INLINE,          // (C99)
+    TOKEN_TYPE_RESTRICT,        // (C99)
+    TOKEN_TYPE_COMPLEX,         // (C99)
+    TOKEN_TYPE_IMAGINARY,       // (C99)
+    TOKEN_TYPE_BOOL,            // (C99)(deprecated in C23)
+    TOKEN_TYPE_ATOMIC,          // (C11)
+    TOKEN_TYPE_GENERIC,         // (C11)
 
 	TOKEN_TYPE_CHAR,
 	TOKEN_TYPE_SHORT,
@@ -129,16 +137,6 @@ typedef enum {
 
     // TODO: Consider the below token types later!
     //
-    // [TOKEN_TYPE_] = "auto", 
-    //
-    // [TOKEN_TYPE_] = "inline",               // (C99)
-    // [TOKEN_TYPE_] = "restrict",             // (C99)
-    // [TOKEN_TYPE_] = "_Complex",             // (C99)
-    // [TOKEN_TYPE_] = "_Imaginary",           // (C99)
-    // [TOKEN_TYPE_] = "_Bool",                // (C99)(deprecated in C23)
-    //
-    // [TOKEN_TYPE_] = "_Atomic",              // (C11)
-    // [TOKEN_TYPE_] = "_Generic",             // (C11)
     // [TOKEN_TYPE_] = "_Alignas",             // (C11)(deprecated in C23)
     // [TOKEN_TYPE_] = "_Alignof",             // (C11)(deprecated in C23)
     // [TOKEN_TYPE_] = "_Noreturn",            // (C11)(deprecated in C23)
@@ -184,9 +182,14 @@ Number* new_number(
 #define TOKEN_TYPES_NUM (TOKEN_TYPE_end - TOKEN_TYPE_beg + 1)
 
 typedef struct {
-    const char* txt;        // The string value of the token of any type but numbers, `txt` will be NULL for numbers
+    const char* txt;        // The string value of the token of any type but numbers,
+                            // `txt` will be NULL for numbers
+
     const size_t length;    // The length of `txt`
-    const Number* number;   // Contains information about the number value of the token if the token of type a number
+
+    const Number* number;   // Contains information about the number value of the token if the token
+                            // of type a number
+
     const size_t line;      // The source line that the token starts
     const size_t col;       // The source column that the token starts
     const TokenType type;
