@@ -116,30 +116,30 @@ static const char* scan_identifier(Scanner* s)
         ch = peek_next(s);
 
         switch (ch) {
-            case EOF:
-            case ';': 
-            case '(': 
-            case '[': 
-            case '{': 
-                idf_end = true;
-                break;
-            default:
-                if (ch == '_' || is_alnum(ch)) {
-                    if (idf_name_len == MAX_IDENTIFIER_NAME_SIZE) {
-                        s->err = INVALID_IDENTIFIER_NAME;
-                        return NULL;
-                    }
-                    ch = next_char(s);
-                    idf_name_buf[idf_name_len] = ch;
-                    ++idf_name_len;
-                }
-                else if (is_whitespace(ch)) {
-                    idf_end = true;
-                }
-                else {
+        case EOF:
+        case ';': 
+        case '(': 
+        case '[': 
+        case '{': 
+            idf_end = true;
+            break;
+        default:
+            if (ch == '_' || is_alnum(ch)) {
+                if (idf_name_len == MAX_IDENTIFIER_NAME_SIZE) {
                     s->err = INVALID_IDENTIFIER_NAME;
                     return NULL;
                 }
+                ch = next_char(s);
+                idf_name_buf[idf_name_len] = ch;
+                ++idf_name_len;
+            }
+            else if (is_whitespace(ch)) {
+                idf_end = true;
+            }
+            else {
+                s->err = INVALID_IDENTIFIER_NAME;
+                return NULL;
+            }
         }
     }
 
@@ -201,646 +201,646 @@ scan_again:
     else
     {
         switch (ch) {
-            case '#':
-                next_char(s); // skip '#'
-                const char* pp_directive = scan_identifier(s);
-                return new_token(
-                    pp_directive,
-                    strlen(pp_directive),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_PREPROCESSOR_DIRECTIVE,
-                    NULL
-                );
-            case '"': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
-                // [-Werror=free-labels]
-                const char* str_literal = scan_str_literal(s);
-                return new_token(
-                    str_literal,
-                    strlen(str_literal),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_STRING_LIT,
-                    NULL
-                );
-            case '\'': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
-                // [-Werror=free-labels]
-                const char* char_literal = scan_char_literal(s);
-                return new_token(
-                    char_literal,
-                    strlen(char_literal),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_CHAR_LIT,
-                    NULL
-                );
-            case '(':
-                next_char(s);
-                return new_token(
-                    token_type_name[TOKEN_TYPE_LPAREN],
-                    strlen(token_type_name[TOKEN_TYPE_LPAREN]),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_LPAREN,
-                    NULL
-                );
-            case '[':
-                next_char(s);
-                return new_token(
-                    token_type_name[TOKEN_TYPE_LBRACK],
-                    strlen(token_type_name[TOKEN_TYPE_LBRACK]),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_LBRACK,
-                    NULL
-                );
-            case '{':
-                next_char(s);
-                return new_token(
-                    token_type_name[TOKEN_TYPE_LBRACE],
-                    strlen(token_type_name[TOKEN_TYPE_LBRACE]),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_LBRACE,
-                    NULL
-                );
-            case ')':
-                next_char(s);
-                return new_token(
-                    token_type_name[TOKEN_TYPE_RPAREN],
-                    strlen(token_type_name[TOKEN_TYPE_RPAREN]),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_RPAREN,
-                    NULL
-                );
-            case ']':
-                next_char(s);
-                return new_token(
-                    token_type_name[TOKEN_TYPE_RBRACK],
-                    strlen(token_type_name[TOKEN_TYPE_RBRACK]),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_RBRACK,
-                    NULL
-                );
-            case '}':
-                next_char(s);
-                return new_token(
-                    token_type_name[TOKEN_TYPE_RBRACE],
-                    strlen(token_type_name[TOKEN_TYPE_RBRACE]),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_RBRACE,
-                    NULL
-                );
-            case ',':
-                next_char(s);
-                return new_token(
-                    token_type_name[TOKEN_TYPE_COMMA],
-                    strlen(token_type_name[TOKEN_TYPE_COMMA]),
-                    tok_line,
-                    tok_col,
-                    TOKEN_TYPE_COMMA,
-                    NULL
-                );
-            case '.':
+        case '#':
+            next_char(s); // skip '#'
+            const char* pp_directive = scan_identifier(s);
+            return new_token(
+                pp_directive,
+                strlen(pp_directive),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_PREPROCESSOR_DIRECTIVE,
+                NULL
+            );
+        case '"': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
+            // [-Werror=free-labels]
+            const char* str_literal = scan_str_literal(s);
+            return new_token(
+                str_literal,
+                strlen(str_literal),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_STRING_LIT,
+                NULL
+            );
+        case '\'': ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
+            // [-Werror=free-labels]
+            const char* char_literal = scan_char_literal(s);
+            return new_token(
+                char_literal,
+                strlen(char_literal),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_CHAR_LIT,
+                NULL
+            );
+        case '(':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_LPAREN],
+                strlen(token_type_name[TOKEN_TYPE_LPAREN]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_LPAREN,
+                NULL
+            );
+        case '[':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_LBRACK],
+                strlen(token_type_name[TOKEN_TYPE_LBRACK]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_LBRACK,
+                NULL
+            );
+        case '{':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_LBRACE],
+                strlen(token_type_name[TOKEN_TYPE_LBRACE]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_LBRACE,
+                NULL
+            );
+        case ')':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_RPAREN],
+                strlen(token_type_name[TOKEN_TYPE_RPAREN]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_RPAREN,
+                NULL
+            );
+        case ']':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_RBRACK],
+                strlen(token_type_name[TOKEN_TYPE_RBRACK]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_RBRACK,
+                NULL
+            );
+        case '}':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_RBRACE],
+                strlen(token_type_name[TOKEN_TYPE_RBRACE]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_RBRACE,
+                NULL
+            );
+        case ',':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_COMMA],
+                strlen(token_type_name[TOKEN_TYPE_COMMA]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_COMMA,
+                NULL
+            );
+        case '.':
+            next_char(s);
+            if ('.' == peek_next(s))
+            {
                 next_char(s);
                 if ('.' == peek_next(s))
                 {
                     next_char(s);
-                    if ('.' == peek_next(s))
-                    {
-                        next_char(s);
-                        return new_token(
-                            token_type_name[TOKEN_TYPE_ELLIPSIS],
-                            strlen(token_type_name[TOKEN_TYPE_ELLIPSIS]),
-                            tok_line,
-                            tok_col,
-                            TOKEN_TYPE_ELLIPSIS,
-                            NULL
-                        );
-                    }
-                    else
-                    {
-                        s->err = INVALID_TOKEN;
-                        return NULL;
-                    }
-                }
-                else
-                {
                     return new_token(
-                        token_type_name[TOKEN_TYPE_PERIOD],
-                        strlen(token_type_name[TOKEN_TYPE_PERIOD]),
+                        token_type_name[TOKEN_TYPE_ELLIPSIS],
+                        strlen(token_type_name[TOKEN_TYPE_ELLIPSIS]),
                         tok_line,
                         tok_col,
-                        TOKEN_TYPE_PERIOD,
+                        TOKEN_TYPE_ELLIPSIS,
                         NULL
                     );
                 }
-            case ':':
-                next_char(s);
+                else
+                {
+                    s->err = INVALID_TOKEN;
+                    return NULL;
+                }
+            }
+            else
+            {
                 return new_token(
-                    token_type_name[TOKEN_TYPE_COLON],
-                    strlen(token_type_name[TOKEN_TYPE_COLON]),
+                    token_type_name[TOKEN_TYPE_PERIOD],
+                    strlen(token_type_name[TOKEN_TYPE_PERIOD]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_COLON,
+                    TOKEN_TYPE_PERIOD,
                     NULL
                 );
-            case ';':
+            }
+        case ':':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_COLON],
+                strlen(token_type_name[TOKEN_TYPE_COLON]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_COLON,
+                NULL
+            );
+        case ';':
+            next_char(s);
+            return new_token(
+                token_type_name[TOKEN_TYPE_SEMICOLON],
+                strlen(token_type_name[TOKEN_TYPE_SEMICOLON]),
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_SEMICOLON,
+                NULL
+            );
+        case '+':
+            next_char(s);
+            ch = peek_next(s);
+            if (ch == '+')
+            {
                 next_char(s);
                 return new_token(
-                    token_type_name[TOKEN_TYPE_SEMICOLON],
-                    strlen(token_type_name[TOKEN_TYPE_SEMICOLON]),
+                    token_type_name[TOKEN_TYPE_INC],
+                    strlen(token_type_name[TOKEN_TYPE_INC]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_SEMICOLON,
+                    TOKEN_TYPE_INC,
                     NULL
                 );
-            case '+':
+            }
+            else if (ch == '=')
+            {
                 next_char(s);
-                ch = peek_next(s);
-                if (ch == '+')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_INC],
-                        strlen(token_type_name[TOKEN_TYPE_INC]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_INC,
-                        NULL
-                    );
-                }
-                else if (ch == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_ADD_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_ADD_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_ADD_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_ADD],
-                        strlen(token_type_name[TOKEN_TYPE_ADD]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_ADD,
-                        NULL
-                    );
-                }
-            case '-':
-                next_char(s);
-                ch = peek_next(s);
-                if (ch == '-')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_DEC],
-                        strlen(token_type_name[TOKEN_TYPE_DEC]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_DEC,
-                        NULL
-                    );
-                }
-                else if (ch == '>')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_RARROW],
-                        strlen(token_type_name[TOKEN_TYPE_RARROW]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_RARROW,
-                        NULL
-                    );
-                }
-                else if (ch == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_SUB_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_SUB_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_SUB_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_SUB],
-                        strlen(token_type_name[TOKEN_TYPE_SUB]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_SUB,
-                        NULL
-                    );
-                }
-            case '*':
-                next_char(s);
-                if (peek_next(s) == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_MUL_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_MUL_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_MUL_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_MUL],
-                        strlen(token_type_name[TOKEN_TYPE_MUL]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_MUL,
-                        NULL
-                    );
-                }
-            case '/':
-                next_char(s);
-                ch = peek_next(s);
-                if (ch == '/' || ch == '*')
-                {
-                    next_char(s);
-                    scan_comment(s, ch == '*');
-                    goto scan_again;
-                }
-                else if (ch == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_QUO_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_QUO_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_QUO_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_QUO],
-                        strlen(token_type_name[TOKEN_TYPE_QUO]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_QUO,
-                        NULL
-                    );
-                }
-            case '%':
-                next_char(s);
-                if (peek_next(s) == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_REM_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_REM_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_REM_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_REM],
-                        strlen(token_type_name[TOKEN_TYPE_REM]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_REM,
-                        NULL
-                    );
-                }
-            case '&':
-                next_char(s);
-                ch = peek_next(s);
-                if (ch == '&')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_LAND],
-                        strlen(token_type_name[TOKEN_TYPE_LAND]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_LAND,
-                        NULL
-                    );
-                }
-                else if (ch == '^')
-                {
-                    next_char(s);
-                    if (peek_next(s) == '=')
-                    {
-                        next_char(s);
-                        return new_token(
-                            token_type_name[TOKEN_TYPE_AND_NOT_ASSIGN],
-                            strlen(token_type_name[TOKEN_TYPE_AND_NOT_ASSIGN]),
-                            tok_line,
-                            tok_col,
-                            TOKEN_TYPE_AND_NOT_ASSIGN,
-                            NULL
-                        );
-                    }
-                    else
-                    {
-                        return new_token(
-                            token_type_name[TOKEN_TYPE_AND_NOT],
-                            strlen(token_type_name[TOKEN_TYPE_AND_NOT]),
-                            tok_line,
-                            tok_col,
-                            TOKEN_TYPE_AND_NOT,
-                            NULL
-                        );
-                    }
-                }
-                else if (ch == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_AND_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_AND_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_AND_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_AND],
-                        strlen(token_type_name[TOKEN_TYPE_AND]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_AND,
-                        NULL
-                    );
-                }
-            case '|':
-                next_char(s);
-                ch = peek_next(s);
-                if (ch == '|')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_LOR],
-                        strlen(token_type_name[TOKEN_TYPE_LOR]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_LOR,
-                        NULL
-                    );
-                }
-                else if (ch == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_OR_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_OR_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_OR_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_OR],
-                        strlen(token_type_name[TOKEN_TYPE_OR]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_OR,
-                        NULL
-                    );
-                }
-            case '^':
-                next_char(s);
-                if (peek_next(s) == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_XOR_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_XOR_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_XOR_ASSIGN,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_XOR],
-                        strlen(token_type_name[TOKEN_TYPE_XOR]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_XOR,
-                        NULL
-                    );
-                }
-            case '<':
-                next_char(s);
-                ch = peek_next(s);
-                if (ch == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_LEQ],
-                        strlen(token_type_name[TOKEN_TYPE_LEQ]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_LEQ,
-                        NULL
-                    );
-                }
-                else if (ch == '<')
-                {
-                    next_char(s);
-                    if (peek_next(s) == '=')
-                    {
-                        next_char(s);
-                        return new_token(
-                            token_type_name[TOKEN_TYPE_SHL_ASSIGN],
-                            strlen(token_type_name[TOKEN_TYPE_SHL_ASSIGN]),
-                            tok_line,
-                            tok_col,
-                            TOKEN_TYPE_SHL_ASSIGN,
-                            NULL
-                        );
-                    }
-                    else
-                    {
-                        return new_token(
-                            token_type_name[TOKEN_TYPE_SHL],
-                            strlen(token_type_name[TOKEN_TYPE_SHL]),
-                            tok_line,
-                            tok_col,
-                            TOKEN_TYPE_SHL,
-                            NULL
-                        );
-                    }
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_LSS],
-                        strlen(token_type_name[TOKEN_TYPE_LSS]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_LSS,
-                        NULL
-                    );
-                }
-            case '>':
-                next_char(s);
-                ch = peek_next(s);
-                if (ch == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_GEQ],
-                        strlen(token_type_name[TOKEN_TYPE_GEQ]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_GEQ,
-                        NULL
-                    );
-                }
-                else if (ch == '>')
-                {
-                    next_char(s);
-                    if (peek_next(s) == '=')
-                    {
-                        next_char(s);
-                        return new_token(
-                            token_type_name[TOKEN_TYPE_SHR_ASSIGN],
-                            strlen(token_type_name[TOKEN_TYPE_SHR_ASSIGN]),
-                            tok_line,
-                            tok_col,
-                            TOKEN_TYPE_SHR_ASSIGN,
-                            NULL
-                        );
-                    }
-                    else
-                    {
-                        return new_token(
-                            token_type_name[TOKEN_TYPE_SHR],
-                            strlen(token_type_name[TOKEN_TYPE_SHR]),
-                            tok_line,
-                            tok_col,
-                            TOKEN_TYPE_SHR,
-                            NULL
-                        );
-                    }
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_GTR],
-                        strlen(token_type_name[TOKEN_TYPE_GTR]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_GTR,
-                        NULL
-                    );
-                }
-            case '=':
-                next_char(s);
-                if (peek_next(s) == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_EQL],
-                        strlen(token_type_name[TOKEN_TYPE_EQL]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_EQL,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_ASSIGN],
-                        strlen(token_type_name[TOKEN_TYPE_ASSIGN]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_ASSIGN,
-                        NULL
-                    );
-                }
-            case '!':
-                next_char(s);
-                if (peek_next(s) == '=')
-                {
-                    next_char(s);
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_NEQ],
-                        strlen(token_type_name[TOKEN_TYPE_NEQ]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_NEQ,
-                        NULL
-                    );
-                }
-                else
-                {
-                    return new_token(
-                        token_type_name[TOKEN_TYPE_NOT],
-                        strlen(token_type_name[TOKEN_TYPE_NOT]),
-                        tok_line,
-                        tok_col,
-                        TOKEN_TYPE_NOT,
-                        NULL
-                    );
-                }
-
-            default: ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
-                // [-Werror=free-labels]
-                const char* identifier = scan_identifier(s);
-                size_t idf_len = strlen(identifier);
-
-                if (idf_len > 1) { // all the keywords have >1 length
-                    TokenType tt = (TokenType) ht_get(s->keywords, identifier, idf_len);
-                    if (tt > 0) { // TokenType starts with TOKEN_TYPE_beg, so all the actual/valid TokenType values are >0
-                        free((char*) identifier);
-                        return new_token(
-                            token_type_name[tt],
-                            idf_len,
-                            tok_line,
-                            tok_col,
-                            tt,
-                            NULL
-                        );
-                    }
-                }
-
                 return new_token(
-                    identifier,
-                    idf_len,
+                    token_type_name[TOKEN_TYPE_ADD_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_ADD_ASSIGN]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_IDENT,
+                    TOKEN_TYPE_ADD_ASSIGN,
                     NULL
                 );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_ADD],
+                    strlen(token_type_name[TOKEN_TYPE_ADD]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_ADD,
+                    NULL
+                );
+            }
+        case '-':
+            next_char(s);
+            ch = peek_next(s);
+            if (ch == '-')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_DEC],
+                    strlen(token_type_name[TOKEN_TYPE_DEC]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_DEC,
+                    NULL
+                );
+            }
+            else if (ch == '>')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_RARROW],
+                    strlen(token_type_name[TOKEN_TYPE_RARROW]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_RARROW,
+                    NULL
+                );
+            }
+            else if (ch == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_SUB_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_SUB_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_SUB_ASSIGN,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_SUB],
+                    strlen(token_type_name[TOKEN_TYPE_SUB]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_SUB,
+                    NULL
+                );
+            }
+        case '*':
+            next_char(s);
+            if (peek_next(s) == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_MUL_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_MUL_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_MUL_ASSIGN,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_MUL],
+                    strlen(token_type_name[TOKEN_TYPE_MUL]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_MUL,
+                    NULL
+                );
+            }
+        case '/':
+            next_char(s);
+            ch = peek_next(s);
+            if (ch == '/' || ch == '*')
+            {
+                next_char(s);
+                scan_comment(s, ch == '*');
+                goto scan_again;
+            }
+            else if (ch == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_QUO_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_QUO_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_QUO_ASSIGN,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_QUO],
+                    strlen(token_type_name[TOKEN_TYPE_QUO]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_QUO,
+                    NULL
+                );
+            }
+        case '%':
+            next_char(s);
+            if (peek_next(s) == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_REM_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_REM_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_REM_ASSIGN,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_REM],
+                    strlen(token_type_name[TOKEN_TYPE_REM]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_REM,
+                    NULL
+                );
+            }
+        case '&':
+            next_char(s);
+            ch = peek_next(s);
+            if (ch == '&')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_LAND],
+                    strlen(token_type_name[TOKEN_TYPE_LAND]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_LAND,
+                    NULL
+                );
+            }
+            else if (ch == '^')
+            {
+                next_char(s);
+                if (peek_next(s) == '=')
+                {
+                    next_char(s);
+                    return new_token(
+                        token_type_name[TOKEN_TYPE_AND_NOT_ASSIGN],
+                        strlen(token_type_name[TOKEN_TYPE_AND_NOT_ASSIGN]),
+                        tok_line,
+                        tok_col,
+                        TOKEN_TYPE_AND_NOT_ASSIGN,
+                        NULL
+                    );
+                }
+                else
+                {
+                    return new_token(
+                        token_type_name[TOKEN_TYPE_AND_NOT],
+                        strlen(token_type_name[TOKEN_TYPE_AND_NOT]),
+                        tok_line,
+                        tok_col,
+                        TOKEN_TYPE_AND_NOT,
+                        NULL
+                    );
+                }
+            }
+            else if (ch == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_AND_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_AND_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_AND_ASSIGN,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_AND],
+                    strlen(token_type_name[TOKEN_TYPE_AND]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_AND,
+                    NULL
+                );
+            }
+        case '|':
+            next_char(s);
+            ch = peek_next(s);
+            if (ch == '|')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_LOR],
+                    strlen(token_type_name[TOKEN_TYPE_LOR]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_LOR,
+                    NULL
+                );
+            }
+            else if (ch == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_OR_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_OR_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_OR_ASSIGN,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_OR],
+                    strlen(token_type_name[TOKEN_TYPE_OR]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_OR,
+                    NULL
+                );
+            }
+        case '^':
+            next_char(s);
+            if (peek_next(s) == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_XOR_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_XOR_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_XOR_ASSIGN,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_XOR],
+                    strlen(token_type_name[TOKEN_TYPE_XOR]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_XOR,
+                    NULL
+                );
+            }
+        case '<':
+            next_char(s);
+            ch = peek_next(s);
+            if (ch == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_LEQ],
+                    strlen(token_type_name[TOKEN_TYPE_LEQ]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_LEQ,
+                    NULL
+                );
+            }
+            else if (ch == '<')
+            {
+                next_char(s);
+                if (peek_next(s) == '=')
+                {
+                    next_char(s);
+                    return new_token(
+                        token_type_name[TOKEN_TYPE_SHL_ASSIGN],
+                        strlen(token_type_name[TOKEN_TYPE_SHL_ASSIGN]),
+                        tok_line,
+                        tok_col,
+                        TOKEN_TYPE_SHL_ASSIGN,
+                        NULL
+                    );
+                }
+                else
+                {
+                    return new_token(
+                        token_type_name[TOKEN_TYPE_SHL],
+                        strlen(token_type_name[TOKEN_TYPE_SHL]),
+                        tok_line,
+                        tok_col,
+                        TOKEN_TYPE_SHL,
+                        NULL
+                    );
+                }
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_LSS],
+                    strlen(token_type_name[TOKEN_TYPE_LSS]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_LSS,
+                    NULL
+                );
+            }
+        case '>':
+            next_char(s);
+            ch = peek_next(s);
+            if (ch == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_GEQ],
+                    strlen(token_type_name[TOKEN_TYPE_GEQ]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_GEQ,
+                    NULL
+                );
+            }
+            else if (ch == '>')
+            {
+                next_char(s);
+                if (peek_next(s) == '=')
+                {
+                    next_char(s);
+                    return new_token(
+                        token_type_name[TOKEN_TYPE_SHR_ASSIGN],
+                        strlen(token_type_name[TOKEN_TYPE_SHR_ASSIGN]),
+                        tok_line,
+                        tok_col,
+                        TOKEN_TYPE_SHR_ASSIGN,
+                        NULL
+                    );
+                }
+                else
+                {
+                    return new_token(
+                        token_type_name[TOKEN_TYPE_SHR],
+                        strlen(token_type_name[TOKEN_TYPE_SHR]),
+                        tok_line,
+                        tok_col,
+                        TOKEN_TYPE_SHR,
+                        NULL
+                    );
+                }
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_GTR],
+                    strlen(token_type_name[TOKEN_TYPE_GTR]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_GTR,
+                    NULL
+                );
+            }
+        case '=':
+            next_char(s);
+            if (peek_next(s) == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_EQL],
+                    strlen(token_type_name[TOKEN_TYPE_EQL]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_EQL,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_ASSIGN],
+                    strlen(token_type_name[TOKEN_TYPE_ASSIGN]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_ASSIGN,
+                    NULL
+                );
+            }
+        case '!':
+            next_char(s);
+            if (peek_next(s) == '=')
+            {
+                next_char(s);
+                return new_token(
+                    token_type_name[TOKEN_TYPE_NEQ],
+                    strlen(token_type_name[TOKEN_TYPE_NEQ]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_NEQ,
+                    NULL
+                );
+            }
+            else
+            {
+                return new_token(
+                    token_type_name[TOKEN_TYPE_NOT],
+                    strlen(token_type_name[TOKEN_TYPE_NOT]),
+                    tok_line,
+                    tok_col,
+                    TOKEN_TYPE_NOT,
+                    NULL
+                );
+            }
+
+        default: ; // Just to bypass the error: a label can only be part of a statement and a declaration is not a statement
+            // [-Werror=free-labels]
+            const char* identifier = scan_identifier(s);
+            size_t idf_len = strlen(identifier);
+
+            if (idf_len > 1) { // all the keywords have >1 length
+                TokenType tt = (TokenType) ht_get(s->keywords, identifier, idf_len);
+                if (tt > 0) { // TokenType starts with TOKEN_TYPE_beg, so all the actual/valid TokenType values are >0
+                    free((char*) identifier);
+                    return new_token(
+                        token_type_name[tt],
+                        idf_len,
+                        tok_line,
+                        tok_col,
+                        tt,
+                        NULL
+                    );
+                }
+            }
+
+            return new_token(
+                identifier,
+                idf_len,
+                tok_line,
+                tok_col,
+                TOKEN_TYPE_IDENT,
+                NULL
+            );
         }
     }
 }
