@@ -36,3 +36,14 @@ const char* get_err_msg(Error err, const char* filepath, size_t line, size_t col
 
     return msg_buf;
 }
+
+ErrInfo* new_errinfo(Error err, const char* filepath, const size_t line, const size_t col)
+{
+    ErrInfo* errinfo = (ErrInfo*) malloc(sizeof(ErrInfo));
+    errinfo->name = err_name(err);
+    errinfo->msg = get_err_msg(err, filepath, line, col);
+    *(size_t*)&(errinfo->line) = line;
+    *(size_t*)&(errinfo->col) = col;
+
+    return errinfo;
+}

@@ -23,9 +23,10 @@ typedef struct {
     size_t ln_offset;
     size_t col_offset; 
     HashTable* keywords;    // of type HashTable<const char*, TokenType>
-                            // IMPORTANT!!!: Values shouldn't be dereferenced or freed because they don't store memory addresses,
-                            // rather TokenType enum values.
-    Error err;
+                            // IMPORTANT!!!: Values shouldn't be dereferenced or freed because
+                            // they don't store memory addresses, rather TokenType enum values.
+
+    Error err;              // The first encountered lexer/scanner error.
 } Scanner;
 
 // Scans the next token in the src given by a scanner.

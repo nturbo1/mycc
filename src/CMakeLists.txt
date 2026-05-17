@@ -25,3 +25,4 @@ target_link_libraries(mycc_test
 
 add_subdirectory(util)
 add_subdirectory(scanner)
+add_subdirectory(parser)

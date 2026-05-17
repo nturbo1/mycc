@@ -2,6 +2,8 @@
 #include "hashtable.h"
 #include "scanner.h"
 #include "token.h"
+#include "parser/parser.h"
+#include "ntassert.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -26,8 +28,10 @@ Compiler* init_compiler(Compiler* comp)
 
 void compile(const char* filepath)
 {
-    // Scanner* scanner = init_scanner(NULL, filepath);
-    //
-    // Token* tok = next_tok(scanner);
-    printf("TODO: IMPLEMENT COMPILE!!! filepath: %s\n", filepath);
+    Scanner* scanner = init_scanner(NULL, filepath);
+    assert_always(scanner != NULL, "Scanner was initialized to NULL!");
+    Parser* parser = init_parser(scanner);
+    assert_always(parser != NULL, "Parser was initialized to NULL!");
+
+    parse_file(parser);
 }
