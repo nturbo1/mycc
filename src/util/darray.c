@@ -38,6 +38,7 @@ static void darray_expand(DArray* darr)
     darr->arr = new_arr;
 }
 
+#define DA_INITIAL_CAPACITY 16
 DArray* init_darray(DArray* darr, const size_t capacity, const size_t data_size)
 {
     if (darr == NULL) {
@@ -49,7 +50,7 @@ DArray* init_darray(DArray* darr, const size_t capacity, const size_t data_size)
     }
     darr->arr = malloc(capacity * data_size);
     darr->length = 0;
-    darr->capacity = capacity;
+    darr->capacity = (capacity > 0 ? capacity : DA_INITIAL_CAPACITY);
     darr->data_size = data_size;
 
     return darr;

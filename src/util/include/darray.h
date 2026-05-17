@@ -11,8 +11,11 @@ typedef struct {
 } DArray;
 
 // Initializes a given dynamic array if the pointer is not NULL and returns it.
-// If the DArray pointer is NULL, then it allocates memory, initializes it, and returns the new DArray
-// pointer.
+// If the DArray pointer is NULL, then it allocates memory, initializes it, and
+// returns the new DArray pointer.
+//
+// Pass 0 capacity if you don't want to specify the inital capacity, default
+// capacity will be used in that case.
 DArray* init_darray(DArray* darr, const size_t capacity, const size_t data_size);
 
 void free_darray(DArray** darr);
