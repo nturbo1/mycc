@@ -118,11 +118,11 @@ typedef enum {
     TOKEN_TYPE_AUTO, 
     TOKEN_TYPE_INLINE,          // (C99)
     TOKEN_TYPE_RESTRICT,        // (C99)
-    TOKEN_TYPE_COMPLEX,         // (C99)
-    TOKEN_TYPE_IMAGINARY,       // (C99)
-    TOKEN_TYPE_BOOL,            // (C99)(deprecated in C23)
-    TOKEN_TYPE_ATOMIC,          // (C11)
-    TOKEN_TYPE_GENERIC,         // (C11)
+    TOKEN_TYPE__COMPLEX,         // (C99)
+    TOKEN_TYPE__IMAGINARY,       // (C99)
+    TOKEN_TYPE__BOOL,            // (C99)(deprecated in C23)
+    // TOKEN_TYPE__ATOMIC,          // (C11)
+    // TOKEN_TYPE__GENERIC,         // (C11)
 
 	TOKEN_TYPE_CHAR,
 	TOKEN_TYPE_SHORT,

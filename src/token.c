@@ -137,7 +137,15 @@ const char* token_type_name[TOKEN_TYPES_NUM] = {
     [TOKEN_TYPE_UNSIGNED] = "unsigned", 
     [TOKEN_TYPE_SIZEOF] = "sizeof", 
     [TOKEN_TYPE_TYPEDEF] = "typedef", 
-    [TOKEN_TYPE_VOLATILE] = "volatile", 
+    [TOKEN_TYPE_VOLATILE] = "volatile",
+    [TOKEN_TYPE_AUTO] = "auto", 
+    [TOKEN_TYPE_INLINE] = "inline",          // (C99)
+    [TOKEN_TYPE_RESTRICT] = "restrict",        // (C99)
+    [TOKEN_TYPE__COMPLEX] = "_Complex",         // (C99)
+    [TOKEN_TYPE__IMAGINARY] = "_Imaginary",       // (C99)
+    [TOKEN_TYPE__BOOL] = "_Bool",      // (C99)(deprecated in C23)
+    // [TOKEN_TYPE__ATOMIC] = "_Atomic",          // (C11)
+    // [TOKEN_TYPE__GENERIC] = "_Generic",         // (C11)
 
     [TOKEN_TYPE_CHAR] = "char", 
     [TOKEN_TYPE_SHORT] = "short", 
