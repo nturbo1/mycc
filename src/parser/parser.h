@@ -15,6 +15,6 @@ typedef struct {
 
 Parser* init_parser(Scanner* s);
 
-AstNode* parse_file(Parser* p);
+AstFile* parse_file(Parser* p);
 
 #endif // SRC_PARSER_PARSE_H

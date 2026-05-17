@@ -4,6 +4,21 @@
 #include "token.h"
 #include "darray.h"
 
+typedef struct AstNode
+{
+    const size_t line;
+    const size_t col;
+}
+AstNode;
+
+typedef struct AstFile
+{
+    // DArray<Decl*>
+    DArray* decls;  // A list of declarations in a src file
+}
+AstFile;
+AstFile* new_astfile(DArray* decls);
+
 typedef enum {
     CONST_TYPE_QUALIFIER,
     RESTRICT_TYPE_QUALIFIER,
@@ -47,11 +62,6 @@ typedef enum {
 
     NO_FUNC_SPECIFIER,
 } FuncSpecifier;
-
-typedef struct {
-    const size_t line;
-    const size_t col;
-} AstNode;
 
 // ==============================================================================
 // Expresssions and types
