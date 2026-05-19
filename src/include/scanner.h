@@ -26,11 +26,11 @@ typedef struct {
                             // IMPORTANT!!!: Values shouldn't be dereferenced or freed because
                             // they don't store memory addresses, rather TokenType enum values.
 
-    Error err;              // The first encountered lexer/scanner error.
+    ErrorType err;              // The first encountered lexer/scanner error.
 } Scanner;
 
 // Scans the next token in the src given by a scanner.
-// If there is a lexical error, it sets s->err to the appropriate Error and returns NULL.
+// If there is a lexical error, it sets s->err to the appropriate ErrorType and returns NULL.
 Token* next_tok(Scanner* s);
 
 // Initializes a new scanner with correct initial values and opens a src file with a given filepath.

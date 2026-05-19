@@ -3,24 +3,24 @@
 
 #include <stddef.h>
 
-typedef enum Error {
-    NO_ERROR,
-    INVALID_IDENTIFIER_NAME,
-    INVALID_NUMBER,
-    INVALID_TOKEN,
-    INCOMPATIBLE_NUMBER_SUFFIX,
-} Error;
+typedef enum ErrorType {
+    NO_ERROR_TYPE,
+    INVALID_IDENTIFIER_NAME_ERROR_TYPE,
+    INVALID_NUMBER_ERROR_TYPE,
+    INVALID_TOKEN_ERROR_TYPE,
+    INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE,
+} ErrorType;
 
-const char* err_name(Error err);
-const char* get_err_msg(Error err, const char* filepath, size_t line, size_t col);
+const char* err_name(ErrorType err);
+const char* get_err_msg(ErrorType err, const char* filepath, size_t line, size_t col);
 
-typedef struct ErrInfo {
+typedef struct Error {
     const char* name;
     const char* msg;
     const size_t col;
     const size_t line;
-} ErrInfo;
+} Error;
 
-ErrInfo* new_errinfo(Error err, const char* filepath, const size_t line, const size_t col);
+Error* new_errinfo(ErrorType err, const char* filepath, const size_t line, const size_t col);
 
 #endif // SRC_INCLUDE_ERROR_H

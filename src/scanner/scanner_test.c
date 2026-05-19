@@ -24,7 +24,7 @@ TEST(init_scanner,
     ASSERT_TRUE(s->col_offset == 0);
     ASSERT_TRUE(s->keywords != NULL);
     ASSERT_TRUE(strncmp(s->filepath, filepath, strlen(filepath)) == 0);
-    ASSERT_TRUE(s->err == NO_ERROR);
+    ASSERT_TRUE(s->err == NO_ERROR_TYPE);
 
     fclose(s->file);
 }

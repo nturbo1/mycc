@@ -5,28 +5,28 @@
 #include <stdlib.h>
 
 static const char* err_names[] = {
-    [NO_ERROR] = "",
-    [INVALID_IDENTIFIER_NAME] = "Invalid identifer name",
-    [INVALID_NUMBER] = "Invalid number",
-    [INVALID_TOKEN] = "Invalid token",
-    [INCOMPATIBLE_NUMBER_SUFFIX] = "Incompatible number suffix",
+    [NO_ERROR_TYPE] = "",
+    [INVALID_IDENTIFIER_NAME_ERROR_TYPE] = "Invalid identifer name",
+    [INVALID_NUMBER_ERROR_TYPE] = "Invalid number",
+    [INVALID_TOKEN_ERROR_TYPE] = "Invalid token",
+    [INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE] = "Incompatible number suffix",
 };
 
 static const char* err_msg[] = {
-    [NO_ERROR] = "",
-    [INVALID_IDENTIFIER_NAME] = "Invalid identifer name",
-    [INVALID_NUMBER] = "Invalid number",
-    [INVALID_TOKEN] = "Invalid token",
-    [INCOMPATIBLE_NUMBER_SUFFIX] = "Incompatible number suffix",
+    [NO_ERROR_TYPE] = "",
+    [INVALID_IDENTIFIER_NAME_ERROR_TYPE] = "Invalid identifer name",
+    [INVALID_NUMBER_ERROR_TYPE] = "Invalid number",
+    [INVALID_TOKEN_ERROR_TYPE] = "Invalid token",
+    [INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE] = "Incompatible number suffix",
 };
 
-const char* err_name(Error err)
+const char* err_name(ErrorType err)
 {
     return err_names[err];
 }
 
 #define ERROR_MSG_FMT "%s:%zu:%zu: error: %s"
-const char* get_err_msg(Error err, const char* filepath, size_t line, size_t col)
+const char* get_err_msg(ErrorType err, const char* filepath, size_t line, size_t col)
 {
     const char* msg = err_msg[err];
     // the msg_buf_size value depends on the value of macro ERROR_MSG_FMT
@@ -37,9 +37,9 @@ const char* get_err_msg(Error err, const char* filepath, size_t line, size_t col
     return msg_buf;
 }
 
-ErrInfo* new_errinfo(Error err, const char* filepath, const size_t line, const size_t col)
+Error* new_errinfo(ErrorType err, const char* filepath, const size_t line, const size_t col)
 {
-    ErrInfo* errinfo = (ErrInfo*) malloc(sizeof(ErrInfo));
+    Error* errinfo = (Error*) malloc(sizeof(Error));
     errinfo->name = err_name(err);
     errinfo->msg = get_err_msg(err, filepath, line, col);
     *(size_t*)&(errinfo->line) = line;

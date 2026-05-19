@@ -86,7 +86,7 @@ void skip_whitespace(Scanner* s)
 //                                  [a-zA-Z]+[a-zA-Z0-9]*
 // .
 //
-// If there is a lexical error, it sets s->err to the appropriate Error value.
+// If there is a lexical error, it sets s->err to the appropriate ErrorType value.
 // IT DOES NOT RESET s->err BEFORE SCANNING!!!
 static const char* scan_identifier(Scanner* s)
 {
@@ -96,13 +96,13 @@ static const char* scan_identifier(Scanner* s)
     char ch = peek_next(s);
 
     if (ch == EOF) {
-        s->err = INVALID_IDENTIFIER_NAME;
+        s->err = INVALID_IDENTIFIER_NAME_ERROR_TYPE;
         return NULL;
     }
 
     if (ch != '_' && !is_alpha(ch))
     {
-        s->err = INVALID_IDENTIFIER_NAME;
+        s->err = INVALID_IDENTIFIER_NAME_ERROR_TYPE;
         return NULL;
     }
     ch = next_char(s);
@@ -126,7 +126,7 @@ static const char* scan_identifier(Scanner* s)
         default:
             if (ch == '_' || is_alnum(ch)) {
                 if (idf_name_len == MAX_IDENTIFIER_NAME_SIZE) {
-                    s->err = INVALID_IDENTIFIER_NAME;
+                    s->err = INVALID_IDENTIFIER_NAME_ERROR_TYPE;
                     return NULL;
                 }
                 ch = next_char(s);
@@ -137,7 +137,7 @@ static const char* scan_identifier(Scanner* s)
                 idf_end = true;
             }
             else {
-                s->err = INVALID_IDENTIFIER_NAME;
+                s->err = INVALID_IDENTIFIER_NAME_ERROR_TYPE;
                 return NULL;
             }
         }
@@ -175,7 +175,7 @@ static void scan_comment(Scanner* s, bool is_multiline) {
 Token* next_tok(Scanner* s)
 {
 scan_again:
-    s->err = NO_ERROR;
+    s->err = NO_ERROR_TYPE;
 
     skip_whitespace(s);
     char ch = peek_next(s);
@@ -189,10 +189,10 @@ scan_again:
 
     if (is_dec_digit(ch))
     {
-        s->err = NO_ERROR;
+        s->err = NO_ERROR_TYPE;
 
         Number* number = scan_number(s);
-        if (s->err != NO_ERROR) {
+        if (s->err != NO_ERROR_TYPE) {
             return NULL;
         }
 
@@ -323,7 +323,7 @@ scan_again:
                 }
                 else
                 {
-                    s->err = INVALID_TOKEN;
+                    s->err = INVALID_TOKEN_ERROR_TYPE;
                     return NULL;
                 }
             }
@@ -865,7 +865,7 @@ Scanner* init_scanner(Scanner* s, const char* filepath)
 
     s->file = src_file;
     s->filepath = filepath;
-    s->err = NO_ERROR;
+    s->err = NO_ERROR_TYPE;
     s->bf_end = SCANNER_BUFFER_SIZE;
     s->next = 0;
 

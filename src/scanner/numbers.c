@@ -13,7 +13,7 @@
 // Converts a char to a digit.
 // Updates the error value pointed by a given err parameter accordingly, if the character is
 // not a digit.
-static long int char_to_dig(Error* err_ptr, char ch, NumBase base);
+static long int char_to_dig(ErrorType* err_ptr, char ch, NumBase base);
 
 // Converts a given char sequence, num_chars, into a number value according to a given base.
 //
@@ -23,7 +23,7 @@ static long int char_to_dig(Error* err_ptr, char ch, NumBase base);
 //
 // Updates the error value pointed by a given err parameter, if the char sequence contains an
 // invalid or non-digit character.
-static long int txt_to_num(DArray* num_chars, NumBase base, Error* err_ptr);
+static long int txt_to_num(DArray* num_chars, NumBase base, ErrorType* err_ptr);
 
 static NumberSuffix scan_number_suff(Scanner* s);
 
@@ -48,14 +48,14 @@ static bool is_suff_and_number_compatible(Scanner* s, TokenType number_type, Num
             if (number_type == TOKEN_TYPE_INT_LIT) {
                 return true;
             } else {
-                s->err = INCOMPATIBLE_NUMBER_SUFFIX;
+                s->err = INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE;
                 return false;
             }
         case F_SUFF:
             if (number_type == TOKEN_TYPE_FLOAT_LIT) {
                 return true;
             } else {
-                s->err = INCOMPATIBLE_NUMBER_SUFFIX;
+                s->err = INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE;
                 return false;
             }
         default:
@@ -66,15 +66,15 @@ static bool is_suff_and_number_compatible(Scanner* s, TokenType number_type, Num
 
 Number* scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
 {
-    s->err = NO_ERROR;
+    s->err = NO_ERROR_TYPE;
     char ch = peek_next(s);
 
     if (ch == EOF) {
-        s->err = INVALID_NUMBER;
+        s->err = INVALID_NUMBER_ERROR_TYPE;
         return NULL;
     }
     if (!is_digit(ch)) {
-        s->err = INVALID_NUMBER;
+        s->err = INVALID_NUMBER_ERROR_TYPE;
         return NULL;
     }
 
@@ -127,7 +127,7 @@ Number* scan_number_lit(Scanner* s, NumBase base, bool (*is_digit) (char))
         if (is_whitespace(ch)) {
             return new_number(txt_to_num(num_chars, base, &s->err), 0.0, 0, TOKEN_TYPE_INT_LIT, suff);
         }
-        s->err = INVALID_NUMBER;
+        s->err = INVALID_NUMBER_ERROR_TYPE;
         return NULL;
     }
 }
@@ -145,7 +145,7 @@ Number* scan_number(Scanner* s)
 
     if (ch == EOF)
     {
-        s->err = INVALID_NUMBER;
+        s->err = INVALID_NUMBER_ERROR_TYPE;
         return NULL;
     }
     else if (ch == '0')
@@ -193,7 +193,7 @@ Number* scan_number(Scanner* s)
     }
     else
     {
-        s->err = INVALID_NUMBER;
+        s->err = INVALID_NUMBER_ERROR_TYPE;
         return NULL;
     }
 }
@@ -275,7 +275,7 @@ static NumberSuffix scan_number_suff(Scanner* s)
     }
 }
 
-static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
+static long int char_to_dig(ErrorType* err_ptr, char ch, NumBase base)
 {
     switch (base) {
     case BASE_10:
@@ -301,7 +301,7 @@ static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
         case '9':
             return 9;
         default:
-            *err_ptr = INVALID_NUMBER;
+            *err_ptr = INVALID_NUMBER_ERROR_TYPE;
             return 0;
         }
     case BASE_2:
@@ -311,7 +311,7 @@ static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
         case '1':
             return 1;
         default:
-            *err_ptr = INVALID_NUMBER;
+            *err_ptr = INVALID_NUMBER_ERROR_TYPE;
             return 0;
         }
     case BASE_8:
@@ -333,7 +333,7 @@ static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
         case '7':
             return 7;
         default:
-            *err_ptr = INVALID_NUMBER;
+            *err_ptr = INVALID_NUMBER_ERROR_TYPE;
             return 0;
         }
     case BASE_16:
@@ -377,7 +377,7 @@ static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
         case 'F':
             return 15;
         default:
-            *err_ptr = INVALID_NUMBER;
+            *err_ptr = INVALID_NUMBER_ERROR_TYPE;
             return 0;
         }
         break;
@@ -387,7 +387,7 @@ static long int char_to_dig(Error* err_ptr, char ch, NumBase base)
     }
 }
 
-static long int txt_to_num(DArray* num_chars, NumBase base, Error* err_ptr)
+static long int txt_to_num(DArray* num_chars, NumBase base, ErrorType* err_ptr)
 {
     assert(num_chars != NULL);
     long int radix = 10;
@@ -415,9 +415,9 @@ static long int txt_to_num(DArray* num_chars, NumBase base, Error* err_ptr)
     {
         char ch = * (char*) darray_get_at(num_chars, num_chars_len - 1 - i);
 
-        *err_ptr = NO_ERROR;
+        *err_ptr = NO_ERROR_TYPE;
         long int digit = char_to_dig(err_ptr, ch, base);
-        if (*err_ptr != NO_ERROR) {
+        if (*err_ptr != NO_ERROR_TYPE) {
             return 0;
         }
 
