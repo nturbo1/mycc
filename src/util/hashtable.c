@@ -39,7 +39,7 @@ static void ht_delete_bucket_entries(HashTable* ht)
     {
         // Free the bucket chain if exists
         if (ht->buckets[i].entry_count > 0) {
-            assert(ht->buckets[i].root != NULL ||
+            assert(ht->buckets[i].root != NULL &&
                     "HashTable bucket root is NULL while the bucket entry_count >0");
             HtBucketEntry* curr_entry = ht->buckets[i].root;
             HtBucketEntry* prev_entry = NULL;
@@ -65,10 +65,10 @@ static const char* ht_put_ht_bucket_entry(
         bool is_expansion
 ) {
     size_t bucket_index = get_ht_bucket_index(key, key_size, ht_capacity);
-    assert(bucket_index < ht_capacity || "Bucket index >= ht_capacity");
+    assert(bucket_index < ht_capacity && "Bucket index >= ht_capacity");
     HtBucket* bucket = buckets + bucket_index;
-    assert((bucket->entry_count > 0 && bucket->root != NULL) ||
-            (bucket->entry_count == 0 && bucket->root == NULL) ||
+    assert((bucket->entry_count > 0 && bucket->root != NULL) &&
+            (bucket->entry_count == 0 && bucket->root == NULL) &&
             "HashTable bucket entry_count and root are not in sync");
 
     HtBucketEntry* curr_entry = bucket->root;
@@ -117,7 +117,7 @@ static const char* ht_put_ht_bucket_entry(
 // Doubles the capacity of the hashtable and inserts all of its elements to a new expanded location.
 static bool ht_expand(HashTable* ht)
 {
-    assert(ht != NULL || "NULL hashtable was given to ht_expand"); // Maybe you should just ht_new()???
+    assert(ht != NULL && "NULL hashtable was given to ht_expand"); // Maybe you should just ht_new()???
 
     size_t new_capacity = ht->capacity * 2;
     if (new_capacity < ht->capacity) // overflow (capacity would be too big)
@@ -129,7 +129,7 @@ static bool ht_expand(HashTable* ht)
     for (size_t i = 0; i < ht->capacity; i++)
     {
         if (ht->buckets[i].entry_count > 0) {
-            assert(ht->buckets[i].root != NULL || "HashTable bucket root is NULL while entry_count >0");
+            assert(ht->buckets[i].root != NULL && "HashTable bucket root is NULL while entry_count >0");
 
             HtBucketEntry* curr_entry = ht->buckets[i].root;
             HtBucketEntry* prev_entry = NULL;
@@ -186,7 +186,7 @@ HashTable* ht_new(size_t capacity)
 
 void ht_delete(HashTable* ht)
 {
-    assert(ht != NULL || "NULL hashtable pointer was given to ht_delete");
+    assert(ht != NULL && "NULL hashtable pointer was given to ht_delete");
 
     ht_delete_bucket_entries(ht);
 
@@ -196,12 +196,12 @@ void ht_delete(HashTable* ht)
 
 const void* ht_get(const HashTable* ht, const char* key, const size_t key_size)
 {
-    assert(ht != NULL || "NULL hashtable was passed to ht_get");
-    assert(key != NULL || "NULL key was passed to ht_get");
-    assert(key_size > 0 || "An empty key was passed to ht_get");
+    assert(ht != NULL && "NULL hashtable was passed to ht_get");
+    assert(key != NULL && "NULL key was passed to ht_get");
+    assert(key_size > 0 && "An empty key was passed to ht_get");
 
     const size_t bucket_index = get_ht_bucket_index(key, key_size, ht->capacity);
-    assert(bucket_index < ht->capacity || "HashTable bucket_index >= ht->capacity");
+    assert(bucket_index < ht->capacity && "HashTable bucket_index >= ht->capacity");
     HtBucket* bucket = ht->buckets + bucket_index;
 
     if (bucket == NULL)
@@ -222,10 +222,10 @@ const void* ht_get(const HashTable* ht, const char* key, const size_t key_size)
 
 const char* ht_put(HashTable* ht, const char* key, const size_t key_size, const void* value)
 {
-    assert(ht != NULL || "NULL hashtable was passed to ht_put");
-    assert(key != NULL || "NULL key was passed to ht_put");
-    assert(key_size > 0 || "An empty key was passed to ht_put");
-    assert(value != NULL || "NULL value was passed to ht_put");
+    assert(ht != NULL && "NULL hashtable was passed to ht_put");
+    assert(key != NULL && "NULL key was passed to ht_put");
+    assert(key_size > 0 && "An empty key was passed to ht_put");
+    assert(value != NULL && "NULL value was passed to ht_put");
 
     if (LOAD_FACTOR_VALUE <= ((double) ht->size) / ht->capacity) {
         ht_expand(ht); // TODO: CHECK THE FUNCTION RETURN VALUE AND HANDLE IT, MAYBE LOG THE SITUATION???
@@ -273,7 +273,7 @@ void ht_print(const HashTable* ht)
             ht->buckets[ht->capacity - 1].entry_count);
 
     if (ht->buckets[ht->capacity - 1].entry_count > 0) {
-        assert(ht->buckets[ht->capacity - 1].root != NULL ||
+        assert(ht->buckets[ht->capacity - 1].root != NULL &&
                 "HashTable's last bucket root is NULL while its entry_count >0");
         HtBucketEntry* curr = ht->buckets[ht->capacity - 1].root;
         while (curr != NULL)

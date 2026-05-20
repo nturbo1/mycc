@@ -5,12 +5,15 @@
 #include "scanner.h"
 #include "darray.h"
 #include "error.h"
+#include "token.h"
 
 typedef struct {
     Scanner* scanner;
 
     // DArray<ErrInfo>
-    DArray* errs;       // A list of errors encountered during parsing and scanning
+    DArray* errs; // A list of errors encountered during parsing and scanning
+
+    Token* tok; // one token look-ahead
 } Parser;
 
 Parser* init_parser(Scanner* s);

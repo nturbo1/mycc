@@ -33,8 +33,8 @@ static NumberSuffix scan_number_suff(Scanner* s);
 // returns false.
 static bool is_suff_and_number_compatible(Scanner* s, TokenType number_type, NumberSuffix suff)
 {
-    assert(number_type == TOKEN_TYPE_INT_LIT ||
-           number_type == TOKEN_TYPE_FLOAT_LIT ||
+    assert(number_type == TOKEN_TYPE_INT_LIT &&
+           number_type == TOKEN_TYPE_FLOAT_LIT &&
            "Non int and float token type was passed.");
 
     switch(suff) {

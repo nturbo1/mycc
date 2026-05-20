@@ -26,7 +26,7 @@ typedef struct {
                             // IMPORTANT!!!: Values shouldn't be dereferenced or freed because
                             // they don't store memory addresses, rather TokenType enum values.
 
-    ErrorType err;              // The first encountered lexer/scanner error.
+    ErrorType err;          // The first encountered lexer/scanner error.
 } Scanner;
 
 // Scans the next token in the src given by a scanner.

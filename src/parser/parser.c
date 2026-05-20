@@ -11,7 +11,7 @@
 void skip_stmt(Parser* p)
 {
     Token* tok = next_tok(p->scanner);
-    while(tok != NULL || p->scanner->err != NO_ERROR) // == not the end of a file
+    while(tok != NULL || p->scanner->err != NO_ERROR_TYPE) // == not the end of a file
     {
         if (tok != NULL && tok->type == TOKEN_TYPE_SEMICOLON)
             return;
@@ -21,13 +21,20 @@ void skip_stmt(Parser* p)
     // we reached the end of a file
 }
 
+// static Stmt* parse_stmt(Parser* p)
+// {
+//     assert(p != NULL && "NULL parser was passed to `parse_decl` function!");
+//     return NULL;
+// }
+
 // Parses the next declaration in a file.
 //
 // Returns `NULL` if there is no declaration or the declaration is invalid.
-static Decl* parseDecl(Parser* p)
+static Decl* parse_decl(Parser* p)
 {
-    printf("IMPLEMENT parseDecl! p = %p\n", (void*) p);
-    exit(1);
+    assert(p != NULL && "NULL parser was passed to `parse_decl` function!");
+    // Token* tok = peek_next(p->scanner);
+    return NULL;
 }
 
 // Parses a single file and returns an `AstFile` type instance that contains
@@ -40,9 +47,9 @@ static Decl* parseDecl(Parser* p)
 // `Parser` object while parsing.
 AstFile* parse_file(Parser* p)
 {
-    assert(p != NULL || "A NULL parser was passed while parsing a file!");
+    assert(p != NULL && "A NULL parser was passed while parsing a file!");
 
-    Decl* decl = parseDecl(p);
+    Decl* decl = parse_decl(p);
     if (decl == NULL)
         return NULL; // No valid declaration in a file or the file is empty
 
@@ -59,12 +66,13 @@ AstFile* parse_file(Parser* p)
 Parser* init_parser(Scanner* s)
 {
     assert_always(s != NULL, "NULL scanner was passed to init_parser!");
-    DArray* errs = init_darray(NULL, 0, sizeof(ErrInfo));
+    DArray* errs = init_darray(NULL, 0, sizeof(Error));
 
     Parser* p = (Parser*) malloc(sizeof(Parser));
     assert_always(p != NULL, "Failed to allocate memory for Parser!");
     p->scanner = s;
     p->errs = errs;
+    p->tok = NULL;
 
     return p;
 }
