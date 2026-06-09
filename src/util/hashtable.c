@@ -67,9 +67,11 @@ static const char* ht_put_ht_bucket_entry(
     size_t bucket_index = get_ht_bucket_index(key, key_size, ht_capacity);
     assert(bucket_index < ht_capacity && "Bucket index >= ht_capacity");
     HtBucket* bucket = buckets + bucket_index;
-    assert((bucket->entry_count > 0 && bucket->root != NULL) &&
-            (bucket->entry_count == 0 && bucket->root == NULL) &&
-            "HashTable bucket entry_count and root are not in sync");
+
+    assert(( (bucket->entry_count > 0 && bucket->root != NULL) ||
+             (bucket->entry_count == 0 && bucket->root == NULL) )
+           &&
+           "HashTable bucket entry_count and root are not in sync");
 
     HtBucketEntry* curr_entry = bucket->root;
     HtBucketEntry* prev_entry = NULL;
