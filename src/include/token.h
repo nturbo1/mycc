@@ -28,6 +28,7 @@ typedef enum {
 	TOKEN_TYPE_COLON,     // :
 	TOKEN_TYPE_SEMICOLON, // ;
 	TOKEN_TYPE_ELLIPSIS, // ...
+    TOKEN_TYPE_ASTERISK, // *
 
     TOKEN_TYPE_punctuator_end,
 
@@ -179,6 +180,8 @@ Number* new_number(
         const TokenType type,
         const NumberSuffix suff);
 
+void del_number(Number* num);
+
 #define TOKEN_TYPES_NUM (TOKEN_TYPE_end - TOKEN_TYPE_beg + 1)
 
 typedef struct {
@@ -202,6 +205,8 @@ Token* new_token(
         const size_t col,
         const TokenType type,
         const Number* number);
+
+void del_token(Token* tok);
 
 bool is_keyword(Token* tok);
 bool is_operator(Token* tok);

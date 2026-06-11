@@ -10,10 +10,10 @@
 typedef struct {
     Scanner* scanner;
 
-    // DArray<ErrInfo>
+    // DArray<Error>
     DArray* errs; // A list of errors encountered during parsing and scanning
 
-    Token* tok; // one token look-ahead
+    Token* next_tok; // one token look-ahead
 } Parser;
 
 Parser* init_parser(Scanner* s);

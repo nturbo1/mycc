@@ -17,6 +17,7 @@ typedef struct AstFile
     DArray* decls;  // A list of declarations in a src file
 }
 AstFile;
+
 AstFile* new_astfile(DArray* decls);
 
 typedef enum {
@@ -35,7 +36,7 @@ typedef enum {
     REGISTER_STORAGE_SPECIFIER,
 
     NO_STORAGE_SPECIFIER,
-} StorageSpecifier;
+} StorageClassSpecifier;
 
 typedef enum {
     VOID_TYPE_SPECIFIER,
@@ -62,6 +63,15 @@ typedef enum {
 
     NO_FUNC_SPECIFIER,
 } FuncSpecifier;
+
+typedef struct
+{
+    StorageClassSpecifier strg_class;
+    TypeQualifier type_qualfr;
+    TypeSpecifier type;
+    FuncSpecifier func_specfr;
+}
+DeclSpecifier;
 
 // ==============================================================================
 // Expresssions and types
@@ -92,7 +102,7 @@ typedef struct {
 } Field;
 
 typedef struct {
-    const TokenType operatr;
+    const TokenType op; // the unary operator
     const Expr epxr;
 } UnaryExpr;
 
@@ -118,8 +128,8 @@ typedef enum {
     FUNC_DECL_TYPE,
 } DeclType;
 
-// declaration:
-//          declaration-specifiers init-declarator-list_optional ;
+// Represents a declaration. The parent struct type of all declaration
+// struct types.
 typedef struct {
     const AstNode node;
     const Ident* ident;
@@ -129,7 +139,7 @@ typedef struct {
 typedef struct {
     const Decl decl;
     const FuncSpecifier spec;
-    const StorageSpecifier stor_spec;
+    const StorageClassSpecifier stor_spec;
     const Type* ret_type;
 
     // DArray<Field>

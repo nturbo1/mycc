@@ -21,6 +21,13 @@ Token* new_token(
     return tok;
 }
 
+void del_token(Token* tok)
+{
+    free((char*) tok->txt);
+    del_number((Number*) tok->number);
+    free(tok);
+}
+
 Number* new_number(
         const long int integral,
         const double fractional,
@@ -36,6 +43,11 @@ Number* new_number(
     *(NumberSuffix*)&num->suff = suff;
 
     return num;
+}
+
+void del_number(Number* num)
+{
+    free(num);
 }
 
 bool is_keyword(Token* tok) {
@@ -70,6 +82,7 @@ const char* token_type_name[TOKEN_TYPES_NUM] = {
     [TOKEN_TYPE_SEMICOLON] = ";",
 
     [TOKEN_TYPE_ELLIPSIS] = "...",
+    [TOKEN_TYPE_ASTERISK] = "*",
 
     // OPERATORS
     [TOKEN_TYPE_ADD] = "+",

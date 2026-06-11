@@ -9,6 +9,7 @@ typedef enum ErrorType {
     INVALID_NUMBER_ERROR_TYPE,
     INVALID_TOKEN_ERROR_TYPE,
     INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE,
+    EOF_ERROR_TYPE,
 } ErrorType;
 
 const char* err_name(ErrorType err);
@@ -21,6 +22,6 @@ typedef struct Error {
     const size_t line;
 } Error;
 
-Error* new_errinfo(ErrorType err, const char* filepath, const size_t line, const size_t col);
+Error* new_err(ErrorType err, const char* filepath, const size_t line, const size_t col);
 
 #endif // SRC_INCLUDE_ERROR_H

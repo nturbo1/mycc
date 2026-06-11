@@ -10,6 +10,7 @@ static const char* err_names[] = {
     [INVALID_NUMBER_ERROR_TYPE] = "Invalid number",
     [INVALID_TOKEN_ERROR_TYPE] = "Invalid token",
     [INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE] = "Incompatible number suffix",
+    [EOF_ERROR_TYPE] = "End of File",
 };
 
 static const char* err_msg[] = {
@@ -18,6 +19,7 @@ static const char* err_msg[] = {
     [INVALID_NUMBER_ERROR_TYPE] = "Invalid number",
     [INVALID_TOKEN_ERROR_TYPE] = "Invalid token",
     [INCOMPATIBLE_NUMBER_SUFFIX_ERROR_TYPE] = "Incompatible number suffix",
+    [EOF_ERROR_TYPE] = "End of File",
 };
 
 const char* err_name(ErrorType err)
@@ -37,7 +39,7 @@ const char* get_err_msg(ErrorType err, const char* filepath, size_t line, size_t
     return msg_buf;
 }
 
-Error* new_errinfo(ErrorType err, const char* filepath, const size_t line, const size_t col)
+Error* new_err(ErrorType err, const char* filepath, const size_t line, const size_t col)
 {
     Error* errinfo = (Error*) malloc(sizeof(Error));
     errinfo->name = err_name(err);

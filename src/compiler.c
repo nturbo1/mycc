@@ -32,6 +32,9 @@ void compile(const char* filepath)
     assert_always(scanner != NULL, "Scanner was initialized to NULL!");
     Parser* parser = init_parser(scanner);
     assert_always(parser != NULL, "Parser was initialized to NULL!");
+    scanner = NULL; // the parser owns the scanner now
 
-    parse_file(parser);
+    AstFile* ast = parse_file(parser);
+    // TODO: REMOVE AFTER YOU'RE DONE WITH TESTING!!!
+    printf("Parsed ast: %p\n", (void*) ast);
 }

@@ -168,10 +168,6 @@ static void scan_comment(Scanner* s, bool is_multiline) {
     exit(1);
 }
 
-// Scans for the next token and returns a non NULL Token pointer if it finds a valid token.
-// Returns NULL if it reaches the end of the file.
-//
-// Exits the program with an error message if there's a lexical error.
 Token* next_tok(Scanner* s)
 {
 scan_again:
@@ -181,6 +177,7 @@ scan_again:
     char ch = peek_next(s);
 
     if (ch == EOF) {
+        s->err = EOF_ERROR_TYPE;
         return NULL;
     }
 
@@ -463,11 +460,17 @@ scan_again:
             else
             {
                 return new_token(
-                    token_type_name[TOKEN_TYPE_MUL],
-                    strlen(token_type_name[TOKEN_TYPE_MUL]),
+                    token_type_name[TOKEN_TYPE_ASTERISK],
+                    strlen(token_type_name[TOKEN_TYPE_ASTERISK]),
                     tok_line,
                     tok_col,
-                    TOKEN_TYPE_MUL,
+
+                    // The scanner cannot know whether the token is a multiplication
+                    // operator or a pointer type specifier at the moment, so the
+                    // more general type, TOKEN_TYPE_ASTERISK, is chosen. The
+                    // parser later can decide on the exact type of the token given
+                    // additional context.
+                    TOKEN_TYPE_ASTERISK,
                     NULL
                 );
             }

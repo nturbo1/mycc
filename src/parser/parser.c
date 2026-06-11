@@ -2,8 +2,9 @@
 #include "token.h"
 #include "scanner.h"
 #include "ntassert.h"
+#include "darray.h"
+#include "log.h"
 
-#include <assert.h>
 #include <stdlib.h>
 #include <stddef.h>
 
@@ -11,7 +12,7 @@
 void skip_stmt(Parser* p)
 {
     Token* tok = next_tok(p->scanner);
-    while(tok != NULL || p->scanner->err != NO_ERROR_TYPE) // == not the end of a file
+    while(p->scanner->err != EOF_ERROR_TYPE)
     {
         if (tok != NULL && tok->type == TOKEN_TYPE_SEMICOLON)
             return;
@@ -21,19 +22,130 @@ void skip_stmt(Parser* p)
     // we reached the end of a file
 }
 
-// static Stmt* parse_stmt(Parser* p)
-// {
-//     assert(p != NULL && "NULL parser was passed to `parse_decl` function!");
-//     return NULL;
-// }
+// Reads the next token, assigns it to `p->next_tok` for consecutive calls, and
+// returns the token.
+//
+// If the token is invalid or there is a lexical error, it sets `p->scanner->err`
+// to the error and `p->next_tok` to `NULL`, and returns NULL.
+static Token* ppeek_next(Parser* p)
+{
+    if (p->next_tok == NULL)
+    {
+        p->next_tok = next_tok(p->scanner);
+        assert_debug( (p->next_tok == NULL) == (p->scanner->err != NO_ERROR_TYPE),
+                p->next_tok == NULL ?
+                "The scanner next_tok function returned a NULL token while the scanner"
+                "err type was set to NO_ERROR_TYPE"
+                :
+                "The scanner next_tok function returned a non NULL token while the "
+                "scanner err type was set to a specific error type other than "
+                "NO_ERROR_TYPE");
+
+        if (p->scanner->err != NO_ERROR_TYPE)
+        {
+            p->next_tok = NULL;
+            return NULL;
+        }
+    }
+
+    return p->next_tok;
+}
+
+static Token* pnext_tok(Parser* p)
+{
+    if (p->next_tok != NULL)
+    {
+        Token* tok = p->next_tok;
+        p->next_tok = NULL;
+
+        return tok;
+    }
+
+    return next_tok(p->scanner);
+}
+
+// Parses a declaration specifier.
+//
+// If a lexical or parsing error is encountered, the `p->scanner->err` is set to
+// the error type and `NULL` returned. It is the caller's responsibility to
+// add the error to `p->errs` and handle it properly.
+// Function `parse_decl_specfr` only updates the `p->scanner->err`.
+static DeclSpecifier* parse_decl_specfr(Parser* p)
+{
+    Token* tok = pnext_tok(p);
+    assert_debug( (tok == NULL) == (p->scanner->err != NO_ERROR_TYPE),
+            tok == NULL ?
+            "The pnext_tok function returned NULL token while the scanner"
+            "err type was set to NO_ERROR_TYPE"
+            :
+            "The pnext_tok function returned a non NULL token while the "
+            "scanner err type was set to a specific error type other than "
+            "NO_ERROR_TYPE");
+
+    if (p->scanner->err != NO_ERROR_TYPE)
+        return NULL;
+
+    assert_debug(tok != NULL,
+            "The scanner err was set to `NO_ERROR_TYPE`, so expected `tok` to be NOT NULL.");
+
+    log_fatal("%s", "Implement the rest of function `parse_decl_specfr`!");
+
+    // switch(tok->type)
+    // {
+    // case TOKEN_TYPE_CHAR,
+    //      TOKEN_TYPE_SHORT,
+    //      TOKEN_TYPE_INT,
+    //      TOKEN_TYPE_LONG,
+    //      TOKEN_TYPE_FLOAT,
+    //      TOKEN_TYPE_DOUBLE,
+    //      TOKEN_TYPE_VOID:
+    //          if (tok->type == TOKEN_TYPE_VOID)
+    //              // TODO: YOU LEFT HERE!!!
+    // }
+
+    return NULL;
+}
 
 // Parses the next declaration in a file.
 //
 // Returns `NULL` if there is no declaration or the declaration is invalid.
 static Decl* parse_decl(Parser* p)
 {
-    assert(p != NULL && "NULL parser was passed to `parse_decl` function!");
-    // Token* tok = peek_next(p->scanner);
+    assert_debug(p != NULL, "NULL parser was passed to `parse_decl` function!");
+
+    DeclSpecifier* decl_specfr = NULL;
+    while (decl_specfr == NULL)
+    {
+        decl_specfr = parse_decl_specfr(p);
+        assert_debug( (decl_specfr == NULL) == (p->scanner->err != NO_ERROR_TYPE),
+                decl_specfr == NULL ?
+                "The parse_decl_specfr function returned NULL token while the scanner"
+                "err type was set to NO_ERROR_TYPE"
+                :
+                "The parse_decl_specfr function returned a non NULL token while the "
+                "scanner err type was set to a specific error type other than "
+                "NO_ERROR_TYPE");
+
+        if (p->scanner->err != NO_ERROR_TYPE)
+        {
+            if (p->scanner->err == EOF_ERROR_TYPE)
+                return NULL;
+
+            Error* err = new_err(p->scanner->err,
+                                 p->scanner->filepath,
+                                 p->scanner->ln_offset,
+                                 p->scanner->col_offset);
+            assert_debug(err != NULL, "The new err MUST NOT be NULL");
+            darray_add(p->errs, err, sizeof(Error));
+
+            skip_stmt(p);
+            if (p->scanner->err == EOF_ERROR_TYPE)
+                return NULL;
+        }
+    }
+
+    log_fatal("%s", "Implement the rest of function `parse_decl`!");
+
     return NULL;
 }
 
@@ -47,7 +159,7 @@ static Decl* parse_decl(Parser* p)
 // `Parser` object while parsing.
 AstFile* parse_file(Parser* p)
 {
-    assert(p != NULL && "A NULL parser was passed while parsing a file!");
+    assert_debug(p != NULL, "A NULL parser was passed while parsing a file!");
 
     Decl* decl = parse_decl(p);
     if (decl == NULL)
@@ -72,7 +184,7 @@ Parser* init_parser(Scanner* s)
     assert_always(p != NULL, "Failed to allocate memory for Parser!");
     p->scanner = s;
     p->errs = errs;
-    p->tok = NULL;
+    p->next_tok = NULL;
 
     return p;
 }

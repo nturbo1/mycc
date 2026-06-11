@@ -29,8 +29,13 @@ typedef struct {
     ErrorType err;          // The first encountered lexer/scanner error.
 } Scanner;
 
-// Scans the next token in the src given by a scanner.
-// If there is a lexical error, it sets s->err to the appropriate ErrorType and returns NULL.
+// Scans the next token in the src given by a scanner and returns a valid token.
+//
+// If there is a lexical error, it sets `s->err` to the appropriate `ErrorType`
+// and returns `NULL`.
+//
+// If the end of the file is reached before a valid token scanning completion,
+// then it returns `NULL` and sets `s->err` to `EOF_ERROR_TYPE`.
 Token* next_tok(Scanner* s);
 
 // Initializes a new scanner with correct initial values and opens a src file with a given filepath.
@@ -41,7 +46,6 @@ Token* next_tok(Scanner* s);
 Scanner* init_scanner(Scanner* s, const char* filepath);
 
 char next_char(Scanner* s);
-char peek_next(Scanner* s);
 char peek_next(Scanner* s);
 bool is_whitespace(char ch);
 bool is_alpha(char ch);
