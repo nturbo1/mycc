@@ -100,7 +100,6 @@ static DeclSpecifier* parse_decl_specfr(Parser* p)
     //      TOKEN_TYPE_DOUBLE,
     //      TOKEN_TYPE_VOID:
     //          if (tok->type == TOKEN_TYPE_VOID)
-    //              // TODO: YOU LEFT HERE!!!
     // }
 
     return NULL;
@@ -108,7 +107,11 @@ static DeclSpecifier* parse_decl_specfr(Parser* p)
 
 // Parses the next declaration in a file.
 //
-// Returns `NULL` if there is no declaration or the declaration is invalid.
+// If there is a lexical or parsing error, it skips the current statement
+// entirely and tries to parse a valid declaration again for better diagnostics
+// unless it gets EOF error.
+//
+// Returns `NULL` if there is no valid declaration.
 static Decl* parse_decl(Parser* p)
 {
     assert_debug(p != NULL, "NULL parser was passed to `parse_decl` function!");
