@@ -2,7 +2,7 @@
 #define SRC_INCLUDE_AST_H
 
 #include "token.h"
-#include "darray.h"
+#include "util_inc.h"
 
 typedef struct AstNode
 {

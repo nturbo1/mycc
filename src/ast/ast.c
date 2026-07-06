@@ -1,6 +1,6 @@
 #include "ast.h"
 
-#include "ntassert.h"
+#include "util_inc.h"
 
 #include <stdlib.h>
 

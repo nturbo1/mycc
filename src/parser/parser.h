@@ -3,7 +3,7 @@
 
 #include "ast.h"
 #include "scanner.h"
-#include "darray.h"
+#include "util_inc.h"
 #include "error.h"
 #include "token.h"
 

@@ -3,7 +3,7 @@
 
 #include "token.h"
 #include "error.h"
-#include "hashtable.h"
+#include "util_inc.h"
 
 #include <stdio.h>
 #include <stddef.h>

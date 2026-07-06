@@ -1,7 +1,6 @@
 #include "numbers.h"
-#include "hashtable.h"
-#include "darray.h"
 #include "error.h"
+#include "util_inc.h"
 
 #include <assert.h>
 #include <stddef.h>

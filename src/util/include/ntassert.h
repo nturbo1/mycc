@@ -3,33 +3,26 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
-#define assert_always(cond, msg)                                                \
-    do {                                                                        \
-        if (!(cond)) {                                                          \
-            fprintf(stderr, "[%s:%d]: Assertion %s failed.\n\t%s\n",            \
-                    __FILE__,                                                   \
-                    __LINE__,                                                   \
-                    #cond,                                                      \
-                    msg);                                                       \
-            abort();                                                            \
-        }                                                                       \
-    } while(0)
+#define ASSERT_IMPL(cond, ...)                                      \
+    do {                                                            \
+        if (!(cond)) {                                              \
+            fprintf(stderr,                                         \
+                    "[%s:%d]: Assertion (%s) failed.\n\t",          \
+                    __FILE__, __LINE__, #cond);                     \
+            fprintf(stderr, __VA_ARGS__);                           \
+            fputc('\n', stderr);                                    \
+            abort();                                                \
+        }                                                           \
+    } while (0)
 
-# ifdef DEBUG
-# define assert_debug(cond, msg)                                                \
-    do {                                                                        \
-        if (!(cond)) {                                                          \
-            fprintf(stderr, "[%s:%d]: Assertion %s failed.\n\t%s\n",            \
-                    __FILE__,                                                   \
-                    __LINE__,                                                   \
-                    #cond,                                                      \
-                    msg);                                                       \
-            abort();                                                            \
-        }                                                                       \
-    } while(0)
-# else
-# define assert_debug(cond, fmt, ...) do {} while(0)
-# endif
+#define assert_always(cond, ...) ASSERT_IMPL(cond, __VA_ARGS__)
+
+#ifdef DEBUG
+# define assert_debug(cond, ...) ASSERT_IMPL(cond, __VA_ARGS__)
+#else
+# define assert_debug(...) do {} while (0);
+#endif
 
 #endif // SRC_INCLUDE_NTASSERT_H

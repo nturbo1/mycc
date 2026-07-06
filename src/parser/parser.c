@@ -1,9 +1,7 @@
 #include "parser.h"
 #include "token.h"
 #include "scanner.h"
-#include "ntassert.h"
-#include "darray.h"
-#include "log.h"
+#include "util_inc.h"
 
 #include <stdlib.h>
 #include <stddef.h>

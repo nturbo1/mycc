@@ -1,4 +1,5 @@
 target_sources(mycc_core
     PUBLIC
-    parser.c
+    # TODO: UNCOMMENT AFTER YOU'RE DONE WITH TESTING STUFF!!!
+    # parser.c
 )

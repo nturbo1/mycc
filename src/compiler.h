@@ -1,7 +1,7 @@
 #ifndef SRC_COMPILER_H
 #define SRC_COMPILER_H
 
-#include "hashtable.h"
+#include "util_inc.h"
 
 typedef struct {
     HashTable* symb_table;
