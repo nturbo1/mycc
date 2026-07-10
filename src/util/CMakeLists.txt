@@ -2,6 +2,7 @@ add_library(mycc_core_util
     darray.c
     hashtable.c
     log.c
+    ntstring.c
 )
 target_include_directories(mycc_core_util
     PUBLIC

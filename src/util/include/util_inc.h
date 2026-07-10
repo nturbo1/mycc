@@ -5,5 +5,6 @@
 #include "hashtable.h"
 #include "log.h"
 #include "ntassert.h"
+#include "ntstring.h"
 
 #endif // SRC_UTIL_INCLUDE_UTIL_INC_H
