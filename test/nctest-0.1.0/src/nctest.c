@@ -24,6 +24,7 @@ NT_TestState _nctest_curr_test_state = {
         printf("PASSED: %zu\n", passed_count);                                                           \
         printf("FAILED: %zu\n", failed_count);                                                           \
         printf("---------------------------------------------------------------------------------\n\n"); \
+        fflush(stdout);                                                                                  \
     } while(0)
 
 #define PRINT_SINGLE_TEST_RES(t)                                        \
@@ -35,6 +36,7 @@ NT_TestState _nctest_curr_test_state = {
         } else {                                                        \
             printf("["PASS_COLORED_TEXT"] %s\n", t->test_name);         \
         }                                                               \
+        fflush(stdout);                                                 \
     } while(0)
 
 void nctest_run_all(bool verbose)

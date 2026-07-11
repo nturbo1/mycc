@@ -15,4 +15,9 @@ target_sources(mycc_test
     PRIVATE
     darray_test.c
     hashtable_test.c
+    ntstring_test.c
+)
+target_link_libraries(mycc_core_util
+    PUBLIC
+    mycc_base
 )
