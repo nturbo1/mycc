@@ -70,4 +70,8 @@ StringBuilder* new_string_builder(const U8* const bytes,
                                   const size_t bytes_size,
                                   const size_t capacity);
 
+// Returns a pointer to an immutable copy of the NULL-terminated string bytes
+// of a given StringBuilder object.
+const U8* sb_str_bytes(const StringBuilder* const sb);
+
 #endif // SRC_UTIL_INCLUDE_STRING_H

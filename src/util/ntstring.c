@@ -86,6 +86,19 @@ StringBuilder* new_string_builder(const U8* const bytes,
     return sb;
 }
 
+const U8* sb_str_bytes(const StringBuilder* const sb)
+{
+    if (sb == NULL)
+        return NULL;
+
+    U8* bytes = (U8*) malloc(sb->length + 1);
+    for (size_t i = 0; i < sb->length; i++)
+        bytes[i] = sb->buf[i];
+    bytes[sb->length] = 0;
+
+    return bytes;
+}
+
 inline static size_t length(const U8* const bytes, const size_t bytes_size)
 {
     size_t len = 0;

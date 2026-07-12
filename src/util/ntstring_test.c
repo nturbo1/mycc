@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /* ================================================================================ */
 /* ============================= StringBuilder Tests ============================== */
@@ -161,4 +162,35 @@ TEST(test_successful_new_string_builder,
     }
 
     // TODO: clean up the memory
+}
+
+TEST(test_successful_sb_str_bytes, "Tests successful sb_str_bytes function return cases")
+{
+    // GIVEN
+    const StringBuilderTestData test_data = {
+        .input_bytes = (const U8[]){ 'H', 'e', 'l', 'l', 'o', 0x0 },
+        .input_bytes_size = 6,
+        .input_capacity = 256,
+        .expected_length = 5,
+        .expected_capacity = 256,
+    };
+    const StringBuilder* sb = new_string_builder(test_data.input_bytes,
+                                           test_data.input_bytes_size,
+                                           test_data.input_capacity);
+    ASSERT_TRUE(sb != NULL);
+
+    // WHEN
+    const U8* str_bytes = sb_str_bytes(sb);
+
+    // THEN
+    ASSERT_TRUE(str_bytes != NULL);
+    ASSERT_TRUE(str_bytes != sb->buf); // ensure the returned bytes are copies
+    for (size_t i = 0; i < sb->length; i++)
+        ASSERT_TRUE(str_bytes[i] == sb->buf[i]); // ensure the bytes are copied correctly
+    ASSERT_TRUE(str_bytes[sb->length] == 0); // ensure the returned string bytes are NULL-terminated
+
+    // Clean-up
+    free((U8*) str_bytes);
+    str_bytes = NULL;
+    // TODO: clean up the StringBuilder object
 }
